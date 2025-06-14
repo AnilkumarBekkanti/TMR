@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Planning - TripDash</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary-color: #f1f5f9;
+            --secondary-hover: #e2e8f0;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --background: #f8fafc;
+            --white: #ffffff;
+            --border-color: #e2e8f0;
+            --success-bg: #dcfce7;
+            --success-text: #166534;
+            --warning-bg: #fef3c7;
+            --warning-text: #92400e;
+            --info-bg: #e0f2fe;
+            --info-text: #075985;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --sidebar-bg: #1e293b;
+            --sidebar-text: #f1f5f9;
+            --sidebar-text-hover: #e2e8f0;
+            --modal-overlay: rgba(0, 0, 0, 0.5);
+            --error-bg: #fee2e2;
+            --error-text: #b91c1c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Sidebar Styles */
+        .container {
+            display: flex;
+        }
+
+        .sidebar {
+            background-color: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            padding: 1.5rem;
+            width: 280px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem;
+            margin-left: -120px;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .page-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--modal-overlay);
+            z-index: 999;
+        }
+
+        .sidebar-header {
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--white);
+        }
+        .sidebar-header .icon { color: var(--primary-color); }
+
+        .nav-menu {
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            padding: 0.875rem 1rem;
+            margin: 0.5rem 0;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--sidebar-text);
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--sidebar-text-hover);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary-color);
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        .nav-item:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .mobile-menu-button {
+            display: none;
+            background: linear-gradient(rgb(154, 165, 92));
+            border-radius: 20%;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            color: var(--text-dark);
+            margin-left: -100%;
+            margin-top: -7%;
+        }
+
+        @media (max-width: 1023px) {
+            .sidebar {
+                transform: translateX(-100%);
+                box-shadow: var(--shadow-lg);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .page-overlay.open {
+                display: block;
+            }
+            .mobile-menu-button {
+                display: block;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-right: -30%;
+        }
+
+        .trip-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-button {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            background: var(--white);
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+
+        .filter-button:hover {
+            background: var(--secondary-color);
+        }
+
+        .filter-button.active {
+            background: var(--primary-color);
+            color: var(--white);
+            border-color: var(--primary-color);
+        }
+
+        .trips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .trip-card {
+            background: var(--white);
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .trip-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .trip-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .trip-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .trip-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.375rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-active { background-color: var(--success-bg); color: var(--success-text); }
+        .status-upcoming { background-color: var(--warning-bg); color: var(--warning-text); }
+        .status-completed { background-color: var(--info-bg); color: var(--info-text); }
+        .status-error { background-color: var(--error-bg); color: var(--error-text); }
+
+        .trip-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .trip-info {
+            margin-bottom: 1rem;
+        }
+
+        .trip-info p {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 0.75rem 0;
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .trip-info strong {
+            color: var(--text-dark);
+        }
+
+        .trip-description {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin: 1rem 0;
+            line-height: 1.5;
+        }
+
+        .trip-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            margin-top: auto;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .trip-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .action-button {
+            flex: 1;
+            padding: 0.55rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .action-button.primary {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .action-button.primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .action-button.secondary {
+            background: var(--secondary-color);
+            color: var(--text-dark);
+        }
+
+        .action-button.secondary:hover {
+            background: var(--secondary-hover);
+        }
+
+        .action-button.danger {
+            background: var(--error-bg);
+            color: var(--error-text);
+        }
+
+        .action-button.danger:hover {
+            background: #fecaca;
+        }
+
+        .icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            stroke-width: 1.5;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            background: var(--white);
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            grid-column: 1 / -1;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .empty-state p {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--modal-overlay);
+            z-index: 1100;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.open {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            border-radius: 1rem;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.open .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.2s ease;
+        }
+
+        .close-btn:hover {
+            color: var(--text-dark);
+        }
+
+        .trip-form {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+
+        .form-check-input {
+            margin-right: 0.5rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .error-message {
+            color: var(--error-text);
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--white);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header h1 {
+                text-align: left;
+                width: 100%;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .trip-filters {
+                justify-content: flex-start;
+            }
+
+            .trips-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                margin: 1rem;
+                max-height: 80vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- The overlay for mobile sidebar -->
+        <div class="page-overlay" id="pageOverlay"></div>
+
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-tripadvisor" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                       <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                       <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
+                       <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"></path>
+                       <path d="M8.5 8.5l7 7"></path>
+                       <path d="M15.5 8.5l-7 7"></path>
+                    </svg>
+                    TripDash
+                </h2>
+            </div>
+            <div class="nav-menu">
+                <div class="nav-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-dashboard" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                       <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                       <path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"></path>
+                       <path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z"></path>
+                    </svg>
+                    <a href="./dashboard.html" style="text-decoration: none; color: inherit;">My Trips</a>
+                </div>
+                <div class="nav-item active">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clipboard-list" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                       <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                       <path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2"></path>
+                       <path d="M9 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z"></path>
+                       <path d="M9 12l.01 0"></path>
+                       <path d="M13 12l2 0"></path>
+                       <path d="M9 16l.01 0"></path>
+                       <path d="M13 16l2 0"></path>
+                    </svg>
+                    <a href="#" style="text-decoration: none; color: inherit;">Trip Planning</a>
+                </div>
+                <div class="nav-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-event" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                       <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                       <path d="M4 5m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
+                       <path d="M16 3l0 4"></path>
+                       <path d="M8 3l0 4"></path>
+                       <path d="M4 11l16 0"></path>
+                       <path d="M8 15h2v2h-2z"></path>
+                    </svg>
+                    <a href="#" style="text-decoration: none; color: inherit;">Bookings</a>
+                </div>
+                <div class="nav-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-map-2" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                       <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                       <path d="M12 18.5l-3 -1.5l-6 3v-13l6 -3l6 3l6 -3v7.5"></path>
+                       <path d="M9 4v13"></path>
+                       <path d="M15 7v5.5"></path>
+                       <path d="M21.121 20.121a3 3 0 1 0 -4.242 0c.418 .419 1.125 1.045 2.121 1.879c1.006 -.835 1.703 -1.46 2.121 -1.879z"></path>
+                       <path d="M19 18v.01"></path>
+                    </svg>
+                    <a href="#" style="text-decoration: none; color: inherit;">Itinerary</a>
+                </div>
+                <div class="nav-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-text" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                       <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                       <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
+                       <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path>
+                       <path d="M9 9l1 0"></path>
+                       <path d="M9 13l6 0"></path>
+                       <path d="M9 17l6 0"></path>
+                    </svg>
+                    <a href="#" style="text-decoration: none; color: inherit;">Travel Documents</a>
+                </div>
+                <div class="nav-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-settings" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                       <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                       <path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c.996 .608 2.296 .07 2.572 -1.065z"></path>
+                       <path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"></path>
+                    </svg>
+                    <a href="#" style="text-decoration: none; color: inherit;">Settings</a>
+                </div>
+            </div>
+        </div>  
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <div class="header">
+                <button class="mobile-menu-button" id="menuToggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-menu-2" width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                       <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                       <path d="M4 6l16 0"></path>
+                       <path d="M4 12l16 0"></path>
+                       <path d="M4 18l16 0"></path>
+                    </svg>
+                </button>
+                <h1 style="color: #197a6d;">Trip Planning</h1>
+                <div class="header-actions">
+                    <button class="action-button primary" id="createTripBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <path d="M12 5l0 14"></path>
+                            <path d="M5 12l14 0"></path>
+                        </svg>
+                        Create New Trip
+                    </button>
+                </div>
+            </div>
+
+            <div class="trip-filters">
+                <button class="filter-button active" data-filter="all">All Trips</button>
+                <button class="filter-button" data-filter="upcoming">Upcoming</button>
+                <button class="filter-button" data-filter="active">Active</button>
+                <button class="filter-button" data-filter="completed">Completed</button>
+            </div>
+
+            <div id="tripsGrid" class="trips-grid">
+                <!-- Trips will be loaded here dynamically -->
+                <div class="empty-state">
+                    <h3>Loading your trips...</h3>
+                    <p>Please wait while we fetch your travel plans</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Trip Modal -->
+    <div class="modal" id="tripModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Create New Trip</h3>
+                <button class="close-btn" id="closeModal">×</button>
+            </div>
+            <form id="tripForm" class="trip-form" novalidate>
+                <input type="hidden" id="trip_id" name="trip_id" value="">
+                <div class="form-group">
+                    <label for="destination">Destination</label>
+                    <input type="text" id="destination" name="destination" class="form-control" placeholder="e.g., Paris, France" required>
+                    <div class="error-message" id="destination-error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="trip_name">Trip Name</label>
+                    <input type="text" id="trip_name" name="trip_name" class="form-control" placeholder="e.g., Summer in Paris" required>
+                    <div class="error-message" id="trip_name-error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="start_date">Start Date</label>
+                    <input type="date" id="start_date" name="start_date" class="form-control" required>
+                    <div class="error-message" id="start_date-error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="end_date">End Date</label>
+                    <input type="date" id="end_date" name="end_date" class="form-control" required>
+                    <div class="error-message" id="end_date-error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="is_public">
+                        <input type="checkbox" id="is_public" name="is_public" class="form-check-input">
+                        Make Trip Public
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="description">Trip Description</label>
+                    <textarea id="description" name="description" class="form-control" rows="4" placeholder="Write about your trip..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="action-button secondary" id="cancelTrip">Cancel</button>
+                    <button type="submit" class="action-button primary" id="submitBtn">
+                        <span id="submitBtnText">Create Trip</span>
+                        <span class="loading-spinner" id="submitSpinner" style="display: none;"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>Confirm Deletion</h3>
+                <button class="close-btn" id="closeDeleteModal">×</button>
+            </div>
+            <div class="trip-form" style="padding: 1.5rem;">
+                <p>Are you sure you want to delete this trip? This action cannot be undone.</p>
+                <div class="form-actions">
+                    <button type="button" class="action-button secondary" id="cancelDelete">Cancel</button>
+                    <button type="button" class="action-button danger" id="confirmDelete">
+                        <span>Delete Trip</span>
+                        <span class="loading-spinner" id="deleteSpinner" style="display: none;"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- DOM Elements ---
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const pageOverlay = document.getElementById('pageOverlay');
+        const tripsGrid = document.getElementById('tripsGrid');
+        const filterButtons = document.querySelectorAll('.filter-button');
+        const createTripBtn = document.getElementById('createTripBtn');
+        const tripModal = document.getElementById('tripModal');
+        const closeModal = document.getElementById('closeModal');
+        const cancelTrip = document.getElementById('cancelTrip');
+        const tripForm = document.getElementById('tripForm');
+        const deleteModal = document.getElementById('deleteModal');
+        const closeDeleteModal = document.getElementById('closeDeleteModal');
+        const cancelDelete = document.getElementById('cancelDelete');
+        const confirmDelete = document.getElementById('confirmDelete');
+        const modalTitle = document.getElementById('modalTitle');
+        const submitBtn = document.getElementById('submitBtn');
+        const submitBtnText = document.getElementById('submitBtnText');
+        const submitSpinner = document.getElementById('submitSpinner');
+        const deleteSpinner = document.getElementById('deleteSpinner');
+
+        // API Configuration
+        const API_BASE_URL = 'http://127.0.0.1:8000/api';
+        const TRIPS_ENDPOINT = `${API_BASE_URL}/trips`;
+        const TRIP_CREATE_ENDPOINT = `${API_BASE_URL}/trips/create/`;
+        
+        // State variables
+        let currentFilter = 'all';
+        let allTrips = [];
+        let tripToDelete = null;
+
+        // --- Helper Functions ---
+        function getAuthToken() {
+            // In a real app, you would get this from localStorage or a secure cookie
+            // For demonstration, we'll return a placeholder.
+            // Replace this with your actual authentication logic.
+            // return localStorage.getItem('auth_token');
+            return 'your_jwt_auth_token_here';
+        }
+
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(`${elementId}-error`);
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+            }
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.textContent = '';
+                el.style.display = 'none';
+            });
+            document.querySelectorAll('.form-control.is-invalid').forEach(el => {
+                 el.classList.remove('is-invalid');
+            });
+        }
+
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            // Add time zone to prevent date from shifting by one day
+            return new Date(dateString + 'T00:00:00').toLocaleDateString(undefined, options);
+        }
+
+        function getTripStatus(startDate, endDate) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const start = new Date(startDate);
+            start.setHours(0, 0, 0, 0);
+            
+            const end = new Date(endDate);
+            end.setHours(0, 0, 0, 0);
+            
+            if (today < start) return 'upcoming';
+            if (today > end) return 'completed';
+            return 'active';
+        }
+
+        // --- Sidebar Toggle ---
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            pageOverlay.classList.toggle('open');
+            document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : 'auto';
+        }
+
+        if (menuToggle) menuToggle.addEventListener('click', toggleSidebar);
+        if (pageOverlay) pageOverlay.addEventListener('click', toggleSidebar);
+
+        // --- Modal Functions ---
+        function showModal(trip = null) {
+            clearErrors();
+            tripForm.reset();
+            
+            if (trip) { // Edit mode
+                modalTitle.textContent = 'Edit Trip';
+                submitBtnText.textContent = 'Update Trip';
+                document.getElementById('trip_id').value = trip.id;
+                document.getElementById('destination').value = trip.destination;
+                document.getElementById('trip_name').value = trip.trip_name;
+                document.getElementById('start_date').value = trip.start_date;
+                document.getElementById('end_date').value = trip.end_date;
+                document.getElementById('is_public').checked = trip.is_public;
+                document.getElementById('description').value = trip.description || '';
+            } else { // Create mode
+                modalTitle.textContent = 'Create New Trip';
+                submitBtnText.textContent = 'Create Trip';
+                document.getElementById('trip_id').value = '';
+            }
+            
+            tripModal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideModal() {
+            tripModal.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        function showDeleteModal(tripId) {
+            tripToDelete = tripId;
+            deleteModal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideDeleteModal() {
+            deleteModal.classList.remove('open');
+            document.body.style.overflow = 'auto';
+            tripToDelete = null;
+        }
+
+        // --- API Functions ---
+        async function fetchTrips() {
+            try {
+                const response = await fetch(TRIPS_ENDPOINT, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-User-ID': '1' // Replace with actual user ID from auth
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ message: response.statusText }));
+                    throw new Error(errorData.message || 'Failed to fetch trips');
+                }
+
+                const data = await response.json();
+                allTrips = data.trips || [];
+                renderTrips();
+            } catch (error) {
+                console.error('API Error:', error);
+                tripsGrid.innerHTML = `
+                    <div class="empty-state">
+                        <h3 class="status-error" style="color: var(--error-text);">Oops! Something went wrong.</h3>
+                        <p>We couldn't load your trips. Please check if your API server is running and try again.</p>
+                        <p style="font-size: 0.75rem; color: var(--text-light);">${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // --- Rendering Functions ---
+        function renderTrips() {
+            tripsGrid.innerHTML = '';
+
+            const filteredTrips = allTrips.filter(trip => {
+                if (currentFilter === 'all') return true;
+                const status = getTripStatus(trip.start_date, trip.end_date);
+                return status === currentFilter;
+            });
+
+            if (filteredTrips.length === 0) {
+                let message = "You haven't planned any trips yet.";
+                if (currentFilter !== 'all') {
+                    message = `You have no ${currentFilter} trips.`;
+                }
+                tripsGrid.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No Trips Found</h3>
+                        <p>${message}</p>
+                        <button class="action-button primary" id="emptyStateCreateBtn">
+                            Create a Trip
+                        </button>
+                    </div>
+                `;
+                document.getElementById('emptyStateCreateBtn').addEventListener('click', () => showModal());
+                return;
+            }
+
+            filteredTrips.forEach(trip => {
+                const status = getTripStatus(trip.start_date, trip.end_date);
+                const statusClass = `status-${status}`;
+                const tripCard = document.createElement('div');
+                tripCard.className = 'trip-card';
+                tripCard.dataset.tripId = trip.id;
+                tripCard.innerHTML = `
+                    <div class="trip-header">
+                        <h3>${trip.trip_name}</h3>
+                        <span class="trip-status ${statusClass}">${status}</span>
+                    </div>
+                    <div class="trip-content">
+                        <div class="trip-info">
+                            <p>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"></path><path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z"></path></svg>
+                                <strong>Destination:</strong> ${trip.destination}
+                            </p>
+                            <p>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z"></path><path d="M16 3v4"></path><path d="M8 3v4"></path><path d="M4 11h16"></path><path d="M11 15h1"></path><path d="M12 15v3"></path></svg>
+                                <strong>Dates:</strong> ${formatDate(trip.start_date)} - ${formatDate(trip.end_date)}
+                            </p>
+                        </div>
+                        <p class="trip-description">${trip.description || 'No description provided.'}</p>
+                        <div class="trip-meta">
+                            <span>${trip.is_public ? 'Public Trip' : 'Private Trip'}</span>
+                            <span>Created: ${formatDate(trip.created_at)}</span>
+                        </div>
+                        <div class="trip-actions">
+                            <button class="action-button secondary edit-btn">Edit</button>
+                            <button class="action-button danger delete-btn">Delete</button>
+                        </div>
+                    </div>
+                `;
+                tripsGrid.appendChild(tripCard);
+            });
+        }
+
+        // --- Event Handlers ---
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            clearErrors();
+            const formData = new FormData(tripForm);
+            const tripData = Object.fromEntries(formData.entries());
+            tripData.is_public = document.getElementById('is_public').checked; // FormData doesn't handle unchecked boxes
+            
+            // Basic client-side validation
+            let isValid = true;
+            if (!tripData.destination) { showError('destination', 'Destination is required.'); isValid = false; }
+            if (!tripData.trip_name) { showError('trip_name', 'Trip name is required.'); isValid = false; }
+            if (!tripData.start_date) { showError('start_date', 'Start date is required.'); isValid = false; }
+            if (!tripData.end_date) { showError('end_date', 'End date is required.'); isValid = false; }
+            if (tripData.start_date && tripData.end_date && tripData.start_date > tripData.end_date) {
+                showError('end_date', 'End date cannot be before the start date.');
+                isValid = false;
+            }
+            if (!isValid) return;
+
+            submitBtn.disabled = true;
+            submitSpinner.style.display = 'inline-block';
+            submitBtnText.style.display = 'none';
+
+            const tripId = tripData.trip_id;
+            const method = tripId ? 'PUT' : 'POST';
+            const url = tripId ? `${TRIPS_ENDPOINT}/${tripId}` : TRIP_CREATE_ENDPOINT;
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-User-ID': '1' // Replace with actual user ID from auth
+                    },
+                    body: JSON.stringify(tripData),
+                });
+
+                if (!response.ok) {
+                    if (response.status === 422) { // Validation errors
+                        const errorData = await response.json();
+                        Object.keys(errorData.errors).forEach(key => {
+                            showError(key.replace('.', '_'), errorData.errors[key][0]);
+                        });
+                    } else {
+                        const errorData = await response.json().catch(() => ({ message: 'An unknown error occurred' }));
+                        alert(`Error: ${errorData.message}`);
+                    }
+                    return; // Stop execution on error
+                }
+
+                hideModal();
+                await fetchTrips(); // Refresh the list
+            } catch (error) {
+                console.error('Submit Error:', error);
+                alert('An error occurred while saving the trip. Please check the console.');
+            } finally {
+                submitBtn.disabled = false;
+                submitSpinner.style.display = 'none';
+                submitBtnText.style.display = 'inline-block';
+            }
+        }
+        
+        async function handleDeleteTrip() {
+            if (!tripToDelete) return;
+
+            confirmDelete.disabled = true;
+            deleteSpinner.style.display = 'inline-block';
+            
+            try {
+                const response = await fetch(`${TRIPS_ENDPOINT}/${tripToDelete}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`,
+                        'Accept': 'application/json',
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ message: 'Could not delete the trip.' }));
+                    throw new Error(errorData.message);
+                }
+
+                hideDeleteModal();
+                await fetchTrips(); // Refresh the list
+            } catch (error) {
+                console.error('Delete Error:', error);
+                alert(`Error deleting trip: ${error.message}`);
+            } finally {
+                confirmDelete.disabled = false;
+                deleteSpinner.style.display = 'none';
+            }
+        }
+        
+        // --- Event Listeners Setup ---
+        function setupEventListeners() {
+            // Filter buttons
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    currentFilter = button.dataset.filter;
+                    renderTrips();
+                });
+            });
+
+            // Create trip button
+            createTripBtn.addEventListener('click', () => showModal());
+
+            // Main modal controls
+            closeModal.addEventListener('click', hideModal);
+            cancelTrip.addEventListener('click', hideModal);
+            
+            // Delete modal controls
+            closeDeleteModal.addEventListener('click', hideDeleteModal);
+            cancelDelete.addEventListener('click', hideDeleteModal);
+            confirmDelete.addEventListener('click', handleDeleteTrip);
+
+            // Form submission
+            tripForm.addEventListener('submit', handleFormSubmit);
+
+            // Event delegation for edit/delete buttons on trip cards
+            tripsGrid.addEventListener('click', (e) => {
+                const target = e.target;
+                const tripCard = target.closest('.trip-card');
+                if (!tripCard) return;
+                
+                const tripId = tripCard.dataset.tripId;
+                const tripData = allTrips.find(t => t.id == tripId);
+                
+                if (target.classList.contains('edit-btn')) {
+                    if (tripData) showModal(tripData);
+                } else if (target.classList.contains('delete-btn')) {
+                    if (tripId) showDeleteModal(tripId);
+                }
+            });
+        }
+        
+        // --- Initialization ---
+        function init() {
+            setupEventListeners();
+            fetchTrips();
+        }
+
+        init();
+    });
+    </script>
+</body>
+</html>

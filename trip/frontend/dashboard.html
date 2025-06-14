@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Dashboard - Improved</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ------------------- */
+        /* --- RESET & DEFAULTS --- */
+        /* ------------------- */
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary-color: #f1f5f9;
+            --secondary-hover: #e2e8f0;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --background: #f8fafc;
+            --white: #ffffff;
+            --border-color: #e2e8f0;
+            --sidebar-bg: #1e293b;
+            --sidebar-text: #cbd5e1;
+            --sidebar-text-hover: var(--white);
+            --sidebar-active-bg: rgba(79, 70, 229, 0.2);
+            --sidebar-active-text: var(--primary-color);
+            --success-bg: #dcfce7;
+            --success-text: #166534;
+            --warning-bg: #fef3c7;
+            --warning-text: #92400e;
+            --info-bg: #e0f2fe;
+            --info-text: #075985;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+        
+        /* Universal Icon Styling */
+        .icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            stroke-width: 1.5;
+            flex-shrink: 0;
+        }
+
+        /* ------------------- */
+        /* --- LAYOUT --- */
+        /* ------------------- */
+        .container {
+            display: flex;
+        }
+
+        .sidebar {
+            background-color: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            padding: 1.5rem;
+            width: 280px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .page-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        /* ------------------- */
+        /* --- SIDEBAR --- */
+        /* ------------------- */
+        .sidebar-header {
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--white);
+        }
+        .sidebar-header .icon { color: var(--primary-color); }
+
+        .nav-menu {
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            padding: 0.875rem 1rem;
+            margin: 0.5rem 0;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--sidebar-text);
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--sidebar-text-hover);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary-color);
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        .nav-item:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* ------------------- */
+        /* --- MAIN CONTENT & HEADER --- */
+        /* ------------------- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-left h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+        }
+
+        .header-left p {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            border: 2px solid var(--white);
+            box-shadow: var(--shadow);
+        }
+        
+        .mobile-menu-button {
+            display: none; /* Hidden on desktop */
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        /* ------------------- */
+        /* --- STATUS PILLS & BUTTONS --- */
+        /* ------------------- */
+        .trip-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.375rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-active { background-color: var(--success-bg); color: var(--success-text); }
+        .status-upcoming { background-color: var(--warning-bg); color: var(--warning-text); }
+        .status-completed { background-color: var(--info-bg); color: var(--info-text); }
+
+        .action-button {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .action-button:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .action-button.secondary {
+            background-color: var(--secondary-color);
+            color: var(--text-dark);
+        }
+
+        .action-button.secondary:hover {
+            background-color: var(--secondary-hover);
+        }
+        
+        .action-button:focus-visible {
+             outline: 2px solid var(--primary-color);
+             outline-offset: 2px;
+        }
+
+        /* ------------------- */
+        /* --- CARDS & GRIDS --- */
+        /* ------------------- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-card h4 {
+            color: var(--text-light);
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .value {
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .card h3 .icon { color: var(--primary-color); }
+
+        .card-content {
+            flex-grow: 1;
+        }
+
+        .trip-info p, .checklist-item {
+            margin: 0.75rem 0;
+            color: var(--text-light);
+            font-size: 0.9375rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .trip-info strong { color: var(--text-dark); font-weight: 500; }
+
+        .checklist-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .checklist-item:last-child { border-bottom: none; }
+        .checklist-item.completed { color: var(--success-text); }
+        .checklist-item.completed .icon { color: var(--success-text); }
+        .checklist-item.pending .icon { color: var(--text-light); }
+        
+
+        .card-footer {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        /* ------------------- */
+        /* --- MODAL (FIXED) --- */
+        /* ------------------- */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            border-radius: 1rem;
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 600px;
+            animation: slide-down 0.3s ease-out;
+        }
+
+        @keyframes slide-down {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .modal-header h3 { font-size: 1.25rem; font-weight: 600; }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            font-weight: 300;
+            line-height: 1;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.2s ease;
+        }
+        .close-btn:hover { color: var(--text-dark); }
+
+        .trip-form {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { margin-bottom: 0.5rem; font-weight: 500; font-size: 0.875rem; }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* ------------------- */
+        /* --- TOAST (FIXED) --- */
+        /* ------------------- */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translate(-50%, 150%);
+            background-color: var(--text-dark);
+            color: var(--white);
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 3000;
+            transition: transform 0.4s ease-in-out;
+        }
+        .toast.show {
+            transform: translate(-50%, 0);
+        }
+        .toast-icon {
+            color: var(--success-bg);
+            font-weight: bold;
+        }
+        
+        /* ------------------- */
+        /* --- RESPONSIVENESS --- */
+        /* ------------------- */
+        
+        /* Desktop First (start with what we have) */
+        @media (min-width: 1024px) {
+            .main-content {
+                margin-left: 280px;
+            }
+        }
+        
+        /* Tablet & Mobile */
+        @media (max-width: 1023px) {
+            .sidebar {
+                transform: translateX(-100%);
+                box-shadow: var(--shadow-lg);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .page-overlay.open {
+                display: block;
+            }
+            .mobile-menu-button {
+                display: block;
+            }
+            .header {
+                gap: 1rem;
+            }
+            .header-left {
+                flex-grow: 1;
+            }
+        }
+        
+        /* Small Mobile */
+        @media (max-width: 767px) {
+            .main-content {
+                padding: 1.5rem;
+            }
+            .header {
+                flex-wrap: wrap;
+            }
+            .header-left {
+                width: 100%;
+                margin-bottom: 1rem;
+            }
+            .user-profile {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            .stats-grid, .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Trip Grid Styles */
+        .trips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .trip-card {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .trip-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+        }
+
+        .trip-card h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-dark);
+        }
+
+        .trip-card .trip-info {
+            margin-bottom: 1rem;
+        }
+
+        .trip-card .trip-info p {
+            margin: 0.5rem 0;
+            font-size: 0.875rem;
+        }
+
+        .trip-card .trip-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .trip-card .trip-actions button {
+            flex: 1;
+            padding: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .trip-description {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin: 0.75rem 0;
+            line-height: 1.5;
+        }
+
+        .trip-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .feature-list, .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .feature-item, .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--secondary-color);
+            border-radius: 0.75rem;
+            transition: transform 0.2s ease;
+        }
+
+        .feature-item:hover, .step-item:hover {
+            transform: translateX(8px);
+        }
+
+        .feature-item .icon {
+            color: var(--primary-color);
+            width: 2rem;
+            height: 2rem;
+        }
+
+        .feature-item h4, .step-item h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--text-dark);
+        }
+
+        .feature-item p, .step-item p {
+            color: var(--text-light);
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .step-number {
+            width: 2rem;
+            height: 2rem;
+            background: var(--primary-color);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 768px) {
+            .feature-item, .step-item {
+                padding: 0.75rem;
+            }
+            
+            .feature-item .icon {
+                width: 1.5rem;
+                height: 1.5rem;
+            }
+            
+            .step-number {
+                width: 1.5rem;
+                height: 1.5rem;
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- The overlay for mobile sidebar -->
+        <div class="page-overlay" id="pageOverlay"></div>
+
+        <!-- Improved Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-tripadvisor" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                       <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                       <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
+                       <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"></path>
+                       <path d="M8.5 8.5l7 7"></path>
+                       <path d="M15.5 8.5l-7 7"></path>
+                    </svg>
+                    TripDash
+                </h2>
+            </div>
+            <div class="nav-menu">
+                <div class="nav-item active">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-dashboard" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                       <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                       <path d="M12 13m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
+                       <path d="M13.45 11.55l2.05 -2.05"></path>
+                       <path d="M6.4 20a9 9 0 1 1 11.2 0z"></path>
+                    </svg>
+                    <a href="dashboard.html" style="text-decoration: none; color: inherit;">My Trips</a>
+                </div>
+                <div class="nav-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clipboard-list" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                       <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                       <path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2"></path>
+                       <path d="M9 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z"></path>
+                       <path d="M9 12l.01 0"></path>
+                       <path d="M13 12l2 0"></path>
+                       <path d="M9 16l.01 0"></path>
+                       <path d="M13 16l2 0"></path>
+                    </svg>
+                    <a href="trip_planning.html" style="text-decoration: none; color: inherit;">Trip Planning</a>
+                </div>
+                <div class="nav-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-event" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                       <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                       <path d="M4 5m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
+                       <path d="M16 3l0 4"></path>
+                       <path d="M8 3l0 4"></path>
+                       <path d="M4 11l16 0"></path>
+                       <path d="M8 15h2v2h-2z"></path>
+                    </svg>
+                    <a href="trip_planning.html" style="text-decoration: none; color: inherit;">Bookings</a>
+                </div>
+                <div class="nav-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-map-2" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                       <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                       <path d="M12 18.5l-3 -1.5l-6 3v-13l6 -3l6 3l6 -3v7.5"></path>
+                       <path d="M9 4v13"></path>
+                       <path d="M15 7v5.5"></path>
+                       <path d="M21.121 20.121a3 3 0 1 0 -4.242 0c.418 .419 1.125 1.045 2.121 1.879c1.006 -.835 1.703 -1.46 2.121 -1.879z"></path>
+                       <path d="M19 18v.01"></path>
+                    </svg>
+                    <a href="trip_planning.html" style="text-decoration: none; color: inherit;">Itinerary</a>
+                </div>
+                <div class="nav-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-text" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                       <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                       <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
+                       <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path>
+                       <path d="M9 9l1 0"></path>
+                       <path d="M9 13l6 0"></path>
+                       <path d="M9 17l6 0"></path>
+                    </svg>
+                    <a href="trip_planning.html" style="text-decoration: none; color: inherit;">Travel Documents</a>
+                </div>
+                <div class="nav-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-settings" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                       <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                       <path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c.996 .608 2.296 .07 2.572 -1.065z"></path>
+                       <path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"></path>
+                    </svg>
+                    <a href="settings.html" style="text-decoration: none; color: inherit;">Settings</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <div class="header">
+                 <button class="mobile-menu-button" id="menuToggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-menu-2" width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                       <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                       <path d="M4 6l16 0"></path>
+                       <path d="M4 12l16 0"></path>
+                       <path d="M4 18l16 0"></path>
+                    </svg>
+                </button>
+                <div class="header-left">
+                    <h1>TripDash - Your Travel Companion</h1>
+                    <p>Plan, organize, and manage your trips with ease</p>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>Features</h4>
+                    <div class="value">6+</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Easy to Use</h4>
+                    <div class="value">100%</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Mobile Friendly</h4>
+                    <div class="value">Yes</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Free to Use</h4>
+                    <div class="value">Always</div>
+                </div>
+            </div>
+            
+            <div class="dashboard-grid">
+                <!-- Project Features -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-star" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                               <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                               <path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"></path>
+                            </svg>
+                            Key Features
+                        </h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-plane" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                   <path d="M14.5 6.5l3 -2.9a2.05 2.05 0 0 1 2.9 2.9l-2.9 3l2.5 7.5l-2.5 2.55l-7.5 -2.5l-3 2.9a2.05 2.05 0 0 1 -2.9 -2.9l2.9 -3l-2.5 -7.5l2.5 -2.55l7.5 2.5z"></path>
+                                </svg>
+                                <div>
+                                    <h4>Trip Planning</h4>
+                                    <p>Create and manage your trips with detailed information</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-event" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                   <path d="M4 5m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
+                                   <path d="M16 3l0 4"></path>
+                                   <path d="M8 3l0 4"></path>
+                                   <path d="M4 11l16 0"></path>
+                                   <path d="M8 15h2v2h-2z"></path>
+                                </svg>
+                                <div>
+                                    <h4>Date Management</h4>
+                                    <p>Track trip dates and durations easily</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-map-2" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                   <path d="M12 18.5l-3 -1.5l-6 3v-13l6 -3l6 3l6 -3v7.5"></path>
+                                   <path d="M9 4v13"></path>
+                                   <path d="M15 7v5.5"></path>
+                                   <path d="M21.121 20.121a3 3 0 1 0 -4.242 0c.418 .419 1.125 1.045 2.121 1.879c1.006 -.835 1.703 -1.46 2.121 -1.879z"></path>
+                                   <path d="M19 18v.01"></path>
+                                </svg>
+                                <div>
+                                    <h4>Location Tracking</h4>
+                                    <p>Keep track of your destinations and itineraries</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- How to Use -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-help" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                               <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                               <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
+                               <path d="M12 17l0 .01"></path>
+                               <path d="M12 13.5a1.5 1.5 0 0 1 1 -1.5a2.6 2.6 0 1 0 -3 -4"></path>
+                            </svg>
+                            How to Use
+                        </h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="steps-list">
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <div>
+                                    <h4>Create a Trip</h4>
+                                    <p>Click on "Trip Planning" in the sidebar and create your first trip</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <div>
+                                    <h4>Add Details</h4>
+                                    <p>Fill in trip details like destination, dates, and description</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">3</div>
+                                <div>
+                                    <h4>Manage Trips</h4>
+                                    <p>View, edit, and organize all your trips in one place</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Trip Modal -->
+    <div class="modal" id="tripModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Plan a New Trip</h3>
+                <button class="close-btn" id="closeModal">×</button>
+            </div>
+            <form id="tripForm" class="trip-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="destination">Destination</label>
+                        <input type="text" id="destination" name="destination" class="form-control" placeholder="e.g., Paris, France" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trip_name">Trip Name</label>
+                        <input type="text" id="trip_name" name="trip_name" class="form-control" placeholder="e.g., Summer in Paris" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="start_date">Start Date</label>
+                        <input type="date" id="start_date" name="start_date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="end_date">End Date</label>
+                        <input type="date" id="end_date" name="end_date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        
+                        <label for="is_public">
+                            <input type="checkbox" id="is_public" name="is_public" class="form-check-input">
+                            Make Trip Public
+                        </label>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="description">Trip Description</label>
+                        <textarea id="description" name="description" class="form-control" rows="4" placeholder="Write about your trip..."></textarea>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="action-button secondary" id="cancelTrip">Cancel</button>
+                    <button type="submit" class="action-button">Create Trip</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <span class="toast-icon">✓</span>
+        <span id="toastMessage"></span>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // --- DOM Elements ---
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const pageOverlay = document.getElementById('pageOverlay');
+
+        // --- Sidebar Toggle ---
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            pageOverlay.classList.toggle('open');
+            document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : 'auto';
+        }
+
+        if (menuToggle) menuToggle.addEventListener('click', toggleSidebar);
+        if (pageOverlay) pageOverlay.addEventListener('click', toggleSidebar);
+    });
+    </script>
+</body>
+</html> 

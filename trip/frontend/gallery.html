@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Gallery</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .gallery-item {
+            position: relative;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+        .gallery-item .caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        .gallery-item:hover .caption {
+            transform: translateY(0);
+        }
+        .add-photo-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #007bff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+        .photo-preview {
+            max-width: 100%;
+            max-height: 300px;
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="dashboard.html">Travel Planner</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="itinerary.html">Itinerary</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Gallery</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="logoutBtn">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row mb-4">
+            <div class="col">
+                <h2 id="tripName">Trip Gallery</h2>
+                <p id="tripDates" class="text-muted"></p>
+            </div>
+        </div>
+
+        <div class="row" id="galleryGrid">
+            <!-- Gallery items will be dynamically added here -->
+        </div>
+
+        <div class="add-photo-btn" data-bs-toggle="modal" data-bs-target="#addPhotoModal">
+            <i class="fas fa-plus"></i>
+        </div>
+    </div>
+
+    <!-- Add Photo Modal -->
+    <div class="modal fade" id="addPhotoModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Photo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addPhotoForm">
+                        <div class="mb-3">
+                            <label class="form-label">Photo</label>
+                            <input type="file" class="form-control" id="photoFile" accept="image/*" required>
+                            <img id="photoPreview" class="photo-preview d-none">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Caption</label>
+                            <input type="text" class="form-control" id="photoCaption">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="savePhotoBtn">Upload Photo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Photo Preview Modal -->
+    <div class="modal fade" id="photoPreviewModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="previewCaption"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="previewImage" class="img-fluid" src="">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Get trip ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const tripId = urlParams.get('trip_id');
+        const userId = localStorage.getItem('userId');
+
+        // Fetch trip details and gallery
+        async function loadTripDetails() {
+            try {
+                const response = await fetch(`http://localhost:8000/trips/${tripId}/`, {
+                    headers: {
+                        'X-User-ID': userId
+                    }
+                });
+                const data = await response.json();
+                document.getElementById('tripName').textContent = `${data.trip_name} - Gallery`;
+                document.getElementById('tripDates').textContent = 
+                    `${new Date(data.start_date).toLocaleDateString()} - ${new Date(data.end_date).toLocaleDateString()}`;
+            } catch (error) {
+                console.error('Error loading trip details:', error);
+            }
+        }
+
+        async function loadGallery() {
+            try {
+                const response = await fetch(`http://localhost:8000/trips/${tripId}/gallery/`, {
+                    headers: {
+                        'X-User-ID': userId
+                    }
+                });
+                const data = await response.json();
+                const galleryGrid = document.getElementById('galleryGrid');
+                galleryGrid.innerHTML = '';
+
+                data.photos.forEach(photo => {
+                    const photoElement = createGalleryItem(photo);
+                    galleryGrid.appendChild(photoElement);
+                });
+            } catch (error) {
+                console.error('Error loading gallery:', error);
+            }
+        }
+
+        function createGalleryItem(photo) {
+            const col = document.createElement('div');
+            col.className = 'col-md-4';
+            col.innerHTML = `
+                <div class="gallery-item">
+                    <img src="${photo.image_path}" alt="${photo.caption || 'Trip photo'}" 
+                         onclick="showPhotoPreview('${photo.image_path}', '${photo.caption || ''}')">
+                    <div class="caption">
+                        <p class="mb-0">${photo.caption || ''}</p>
+                        <small class="text-muted">${new Date(photo.uploaded_at).toLocaleDateString()}</small>
+                    </div>
+                </div>
+            `;
+            return col;
+        }
+
+        function showPhotoPreview(imagePath, caption) {
+            document.getElementById('previewImage').src = imagePath;
+            document.getElementById('previewCaption').textContent = caption || 'Photo';
+            new bootstrap.Modal(document.getElementById('photoPreviewModal')).show();
+        }
+
+        // Photo preview
+        document.getElementById('photoFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('photoPreview');
+                    preview.src = e.target.result;
+                    preview.classList.remove('d-none');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Add Photo
+        document.getElementById('savePhotoBtn').addEventListener('click', async () => {
+            const fileInput = document.getElementById('photoFile');
+            const caption = document.getElementById('photoCaption').value;
+
+            if (!fileInput.files[0]) {
+                alert('Please select a photo');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('photo', fileInput.files[0]);
+            formData.append('caption', caption);
+
+            try {
+                const response = await fetch(`http://localhost:8000/trips/${tripId}/gallery/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-User-ID': userId
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    bootstrap.Modal.getInstance(document.getElementById('addPhotoModal')).hide();
+                    loadGallery();
+                } else {
+                    const error = await response.json();
+                    alert(error.error || 'Failed to upload photo');
+                }
+            } catch (error) {
+                console.error('Error uploading photo:', error);
+                alert('Failed to upload photo');
+            }
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('userId');
+            window.location.href = 'login.html';
+        });
+
+        // Initial load
+        if (!userId) {
+            window.location.href = 'login.html';
+        } else {
+            loadTripDetails();
+            loadGallery();
+        }
+    </script>
+</body>
+</html> 

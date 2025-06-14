@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Notes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .note-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .note-content {
+            white-space: pre-wrap;
+        }
+        .add-note-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #007bff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+        .note-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .note-card:hover .note-actions {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="dashboard.html">Travel Planner</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="itinerary.html">Itinerary</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Notes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="logoutBtn">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row mb-4">
+            <div class="col">
+                <h2 id="tripName">Trip Notes</h2>
+                <p id="tripDates" class="text-muted"></p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div id="notesList">
+                    <!-- Note cards will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="add-note-btn" data-bs-toggle="modal" data-bs-target="#addNoteModal">
+            <i class="fas fa-plus"></i>
+        </div>
+    </div>
+
+    <!-- Add Note Modal -->
+    <div class="modal fade" id="addNoteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Note</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addNoteForm">
+                        <div class="mb-3">
+                            <label class="form-label">Note</label>
+                            <textarea class="form-control" id="noteContent" rows="5" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveNoteBtn">Save Note</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Note Modal -->
+    <div class="modal fade" id="editNoteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Note</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editNoteForm">
+                        <input type="hidden" id="editNoteId">
+                        <div class="mb-3">
+                            <label class="form-label">Note</label>
+                            <textarea class="form-control" id="editNoteContent" rows="5" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="updateNoteBtn">Update Note</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Get trip ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const tripId = urlParams.get('trip_id');
+        const userId = localStorage.getItem('userId');
+
+        // Fetch trip details and notes
+        async function loadTripDetails() {
+            try {
+                const response = await fetch(`http://localhost:8000/trips/${tripId}/`, {
+                    headers: {
+                        'X-User-ID': userId
+                    }
+                });
+                const data = await response.json();
+                document.getElementById('tripName').textContent = `${data.trip_name} - Notes`;
+                document.getElementById('tripDates').textContent = 
+                    `${new Date(data.start_date).toLocaleDateString()} - ${new Date(data.end_date).toLocaleDateString()}`;
+            } catch (error) {
+                console.error('Error loading trip details:', error);
+            }
+        }
+
+        async function loadNotes() {
+            try {
+                const response = await fetch(`http://localhost:8000/trips/${tripId}/notes/`, {
+                    headers: {
+                        'X-User-ID': userId
+                    }
+                });
+                const data = await response.json();
+                const notesList = document.getElementById('notesList');
+                notesList.innerHTML = '';
+
+                data.notes.forEach(note => {
+                    const noteCard = createNoteCard(note);
+                    notesList.appendChild(noteCard);
+                });
+            } catch (error) {
+                console.error('Error loading notes:', error);
+            }
+        }
+
+        function createNoteCard(note) {
+            const card = document.createElement('div');
+            card.className = 'note-card';
+            card.innerHTML = `
+                <div class="note-actions">
+                    <button class="btn btn-sm btn-outline-primary me-2" onclick="showEditNoteModal(${note.id}, '${note.note.replace(/'/g, "\\'")}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteNote(${note.id})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="note-content">${note.note}</div>
+                <div class="text-muted mt-2">
+                    <small>Added by ${note.user.first_name} ${note.user.last_name} on ${new Date(note.created_at).toLocaleString()}</small>
+                </div>
+            `;
+            return card;
+        }
+
+        // Add Note
+        document.getElementById('saveNoteBtn').addEventListener('click', async () => {
+            const content = document.getElementById('noteContent').value;
+
+            try {
+                const response = await fetch(`http://localhost:8000/trips/${tripId}/notes/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-User-ID': userId
+                    },
+                    body: JSON.stringify({
+                        note: content
+                    })
+                });
+
+                if (response.ok) {
+                    bootstrap.Modal.getInstance(document.getElementById('addNoteModal')).hide();
+                    document.getElementById('noteContent').value = '';
+                    loadNotes();
+                } else {
+                    const error = await response.json();
+                    alert(error.error || 'Failed to add note');
+                }
+            } catch (error) {
+                console.error('Error adding note:', error);
+                alert('Failed to add note');
+            }
+        });
+
+        // Edit Note
+        function showEditNoteModal(noteId, content) {
+            document.getElementById('editNoteId').value = noteId;
+            document.getElementById('editNoteContent').value = content;
+            new bootstrap.Modal(document.getElementById('editNoteModal')).show();
+        }
+
+        document.getElementById('updateNoteBtn').addEventListener('click', async () => {
+            const noteId = document.getElementById('editNoteId').value;
+            const content = document.getElementById('editNoteContent').value;
+
+            try {
+                const response = await fetch(`http://localhost:8000/trips/${tripId}/notes/${noteId}/`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-User-ID': userId
+                    },
+                    body: JSON.stringify({
+                        note: content
+                    })
+                });
+
+                if (response.ok) {
+                    bootstrap.Modal.getInstance(document.getElementById('editNoteModal')).hide();
+                    loadNotes();
+                } else {
+                    const error = await response.json();
+                    alert(error.error || 'Failed to update note');
+                }
+            } catch (error) {
+                console.error('Error updating note:', error);
+                alert('Failed to update note');
+            }
+        });
+
+        // Delete Note
+        async function deleteNote(noteId) {
+            if (!confirm('Are you sure you want to delete this note?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8000/trips/${tripId}/notes/${noteId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-User-ID': userId
+                    }
+                });
+
+                if (response.ok) {
+                    loadNotes();
+                } else {
+                    const error = await response.json();
+                    alert(error.error || 'Failed to delete note');
+                }
+            } catch (error) {
+                console.error('Error deleting note:', error);
+                alert('Failed to delete note');
+            }
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('userId');
+            window.location.href = 'login.html';
+        });
+
+        // Initial load
+        if (!userId) {
+            window.location.href = 'login.html';
+        } else {
+            loadTripDetails();
+            loadNotes();
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Collaborators</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .collaborator-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .permission-badge {
+            font-size: 0.8rem;
+            padding: 5px 10px;
+            border-radius: 15px;
+            background: #e9ecef;
+        }
+        .permission-badge.editor {
+            background: #28a745;
+            color: white;
+        }
+        .add-collaborator-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #007bff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="dashboard.html">Travel Planner</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="itinerary.html">Itinerary</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Collaborators</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="logoutBtn">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row mb-4">
+            <div class="col">
+                <h2 id="tripName">Trip Collaborators</h2>
+                <p id="tripDates" class="text-muted"></p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div id="collaboratorsList">
+                    <!-- Collaborator cards will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="add-collaborator-btn" data-bs-toggle="modal" data-bs-target="#addCollaboratorModal">
+            <i class="fas fa-plus"></i>
+        </div>
+    </div>
+
+    <!-- Add Collaborator Modal -->
+    <div class="modal fade" id="addCollaboratorModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Collaborator</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addCollaboratorForm">
+                        <div class="mb-3">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="collaboratorEmail" required>
+                            <div class="form-text">Enter the email address of the user you want to invite</div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="canEdit">
+                                <label class="form-check-label" for="canEdit">
+                                    Allow editing
+                                </label>
+                            </div>
+                            <div class="form-text">Collaborators with edit permissions can modify the trip itinerary</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveCollaboratorBtn">Add Collaborator</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Get trip ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const tripId = urlParams.get('trip_id');
+        const userId = localStorage.getItem('userId');
+
+        // Fetch trip details and collaborators
+        async function loadTripDetails() {
+            try {
+                const response = await fetch(`http://localhost:8000/trips/${tripId}/`, {
+                    headers: {
+                        'X-User-ID': userId
+                    }
+                });
+                const data = await response.json();
+                document.getElementById('tripName').textContent = `${data.trip_name} - Collaborators`;
+                document.getElementById('tripDates').textContent = 
+                    `${new Date(data.start_date).toLocaleDateString()} - ${new Date(data.end_date).toLocaleDateString()}`;
+            } catch (error) {
+                console.error('Error loading trip details:', error);
+            }
+        }
+
+        async function loadCollaborators() {
+            try {
+                const response = await fetch(`http://localhost:8000/trips/${tripId}/collaborators/`, {
+                    headers: {
+                        'X-User-ID': userId
+                    }
+                });
+                const data = await response.json();
+                const collaboratorsList = document.getElementById('collaboratorsList');
+                collaboratorsList.innerHTML = '';
+
+                data.collaborators.forEach(collab => {
+                    const collabCard = createCollaboratorCard(collab);
+                    collaboratorsList.appendChild(collabCard);
+                });
+            } catch (error) {
+                console.error('Error loading collaborators:', error);
+            }
+        }
+
+        function createCollaboratorCard(collaborator) {
+            const card = document.createElement('div');
+            card.className = 'collaborator-card';
+            card.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1">${collaborator.user.first_name} ${collaborator.user.last_name}</h5>
+                        <p class="text-muted mb-2">${collaborator.user.email}</p>
+                    </div>
+                    <span class="permission-badge ${collaborator.can_edit ? 'editor' : ''}">
+                        ${collaborator.can_edit ? 'Can Edit' : 'View Only'}
+                    </span>
+                </div>
+            `;
+            return card;
+        }
+
+        // Add Collaborator
+        document.getElementById('saveCollaboratorBtn').addEventListener('click', async () => {
+            const email = document.getElementById('collaboratorEmail').value;
+            const canEdit = document.getElementById('canEdit').checked;
+
+            try {
+                const response = await fetch(`http://localhost:8000/trips/${tripId}/collaborators/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-User-ID': userId
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        can_edit: canEdit
+                    })
+                });
+
+                if (response.ok) {
+                    bootstrap.Modal.getInstance(document.getElementById('addCollaboratorModal')).hide();
+                    loadCollaborators();
+                } else {
+                    const error = await response.json();
+                    alert(error.error || 'Failed to add collaborator');
+                }
+            } catch (error) {
+                console.error('Error adding collaborator:', error);
+                alert('Failed to add collaborator');
+            }
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('userId');
+            window.location.href = 'login.html';
+        });
+
+        // Initial load
+        if (!userId) {
+            window.location.href = 'login.html';
+        } else {
+            loadTripDetails();
+            loadCollaborators();
+        }
+    </script>
+</body>
+</html> 
