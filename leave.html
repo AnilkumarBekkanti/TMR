@@ -617,393 +617,267 @@
         </div>
     </div>
     
+                                       <tbody id="leave-history-body">
+                                        <!-- Leave history rows will be dynamically inserted here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Other views can be added here (Team Leaves, Calendar, Reports, Settings) -->
+                <div id="other-views" style="display: none;">
+                    <div class="card">
+                         <div class="card-header">
+                            <h3 class="card-title" id="other-view-title">Feature Not Implemented</h3>
+                             <button class="btn btn-sm btn-light" onclick="showDashboard()">
+                                    <i class="fas fa-arrow-left"></i> Back
+                                </button>
+                        </div>
+                        <div class="card-body text-center">
+                            <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">This feature is currently under construction. Please check back later!</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Leave Details Modal -->
+    <div class="modal" id="leave-details-modal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-title">Leave Details</h5>
+                <button type="button" class="modal-close" onclick="hideModal()">×</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Details will be injected here -->
+            </div>
+            <div class="modal-footer" id="modal-footer">
+                <button type="button" class="btn btn-light" onclick="hideModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Sample data for the leave management system
-        const leaveHistory = [
-            {
-                id: 1,
-                type: "Annual Leave",
-                startDate: "2023-07-15",
-                endDate: "2023-07-20",
-                duration: 5,
-                status: "approved",
-                reason: "Family vacation",
-                contact: "john.doe@example.com",
-                appliedOn: "2023-06-10",
-                processedBy: "HR Manager",
-                processedOn: "2023-06-12"
-            },
-            {
-                id: 2,
-                type: "Sick Leave",
-                startDate: "2023-08-05",
-                endDate: "2023-08-07",
-                duration: 2,
-                status: "pending",
-                reason: "Flu symptoms",
-                contact: "+1234567890",
-                appliedOn: "2023-07-28",
-                processedBy: "",
-                processedOn: ""
-            },
-            {
-                id: 3,
-                type: "Emergency Leave",
-                startDate: "2023-06-10",
-                endDate: "2023-06-12",
-                duration: 2,
-                status: "rejected",
-                reason: "Family emergency",
-                contact: "+1234567890",
-                appliedOn: "2023-06-08",
-                processedBy: "HR Manager",
-                processedOn: "2023-06-09",
-                rejectionReason: "Insufficient documentation provided"
-            }
-        ];
-        
-        const teamLeaves = [
-            {
-                id: 101,
-                employee: "Jane Smith",
-                type: "Annual Leave",
-                startDate: "2023-07-10",
-                endDate: "2023-07-17",
-                duration: 7,
-                status: "approved"
-            },
-            {
-                id: 102,
-                employee: "Mike Johnson",
-                type: "Sick Leave",
-                startDate: "2023-07-05",
-                endDate: "2023-07-06",
-                duration: 1,
-                status: "approved"
-            },
-            {
-                id: 103,
-                employee: "Sarah Williams",
-                type: "Maternity Leave",
-                startDate: "2023-08-01",
-                endDate: "2023-11-01",
-                duration: 90,
-                status: "pending"
-            }
-        ];
-        
-        // DOM Elements
-        const dashboardView = document.getElementById('dashboard-view');
-        const applyLeaveView = document.getElementById('apply-leave-view');
-        const leaveHistoryView = document.getElementById('leave-history-view');
-        const teamLeavesView = document.getElementById('team-leaves-view');
-        const settingsView = document.getElementById('settings-view');
-        const leaveHistoryBody = document.getElementById('leave-history-body');
-        const teamLeavesBody = document.getElementById('team-leaves-body');
-        const leaveDetailsModal = document.getElementById('leave-details-modal');
-        const leaveDetailsContent = document.getElementById('leave-details-content');
-        const leaveForm = document.getElementById('leave-form');
-        const settingsForm = document.getElementById('settings-form');
-        
-        // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
-            populateLeaveHistory();
-            populateTeamLeaves();
-            
-            // Form submission handlers
-            leaveForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                applyForLeave();
-            });
-            
-            settingsForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                saveSettings();
-            });
-        });
-        
-        // Navigation functions
-        function showDashboard() {
-            hideAllViews();
-            dashboardView.style.display = 'block';
-            updateActiveMenu(0);
-        }
-        
-        function showApplyLeave() {
-            hideAllViews();
-            applyLeaveView.style.display = 'block';
-            updateActiveMenu(1);
-        }
-        
-        function showLeaveHistory() {
-            hideAllViews();
-            leaveHistoryView.style.display = 'block';
-            updateActiveMenu(2);
-        }
-        
-        function showTeamLeaves() {
-            hideAllViews();
-            teamLeavesView.style.display = 'block';
-            updateActiveMenu(3);
-        }
-        
-        function showSettings() {
-            hideAllViews();
-            settingsView.style.display = 'block';
-            updateActiveMenu(4);
-        }
-        
-        function hideAllViews() {
-            dashboardView.style.display = 'none';
-            applyLeaveView.style.display = 'none';
-            leaveHistoryView.style.display = 'none';
-            teamLeavesView.style.display = 'none';
-            settingsView.style.display = 'none';
-        }
-        
-        function updateActiveMenu(index) {
-            const menuItems = document.querySelectorAll('.menu-item');
-            menuItems.forEach((item, i) => {
-                if (i === index) {
-                    item.classList.add('active');
-                } else {
-                    item.classList.remove('active');
+            // --- Sample Data ---
+            const sampleHistory = [
+                { id: 1, type: 'Annual Leave', startDate: '2023-07-15', endDate: '2023-07-20', duration: '5 days', appliedOn: '2023-06-25', status: 'approved', reason: 'Family vacation to the beach.', contact: 'john.doe@email.com' },
+                { id: 2, type: 'Sick Leave', startDate: '2023-08-05', endDate: '2023-08-07', duration: '2 days', appliedOn: '2023-08-05', status: 'pending', reason: 'Fever and cold.', contact: '123-456-7890' },
+                { id: 3, type: 'Emergency Leave', startDate: '2023-06-10', endDate: '2023-06-12', duration: '2 days', appliedOn: '2023-06-10', status: 'rejected', reason: 'Family emergency, had to travel out of state.', contact: '123-456-7890', rejectionReason: 'Insufficient notice provided.' },
+                { id: 4, type: 'Annual Leave', startDate: '2023-05-01', endDate: '2023-05-03', duration: '3 days', appliedOn: '2023-04-15', status: 'approved', reason: 'Personal time off.', contact: 'john.doe@email.com' },
+                { id: 5, type: 'Unpaid Leave', startDate: '2023-09-01', endDate: '2023-09-02', duration: '2 days', appliedOn: '2023-08-20', status: 'pending', reason: 'Attending a workshop.', contact: 'john.doe@email.com' },
+                { id: 6, type: 'Sick Leave', startDate: '2023-04-12', endDate: '2023-04-12', duration: '1 day', appliedOn: '2023-04-12', status: 'approved', reason: 'Doctor\'s appointment.', contact: '123-456-7890' },
+            ];
+
+            const teamLeaves = [
+                { id: 101, employee: 'Jane Smith', avatar: 'JS', type: 'Annual Leave', from: '10 Jul 2023', to: '17 Jul 2023', status: 'approved', reason: 'Extended weekend trip.' },
+                { id: 102, employee: 'Mike Johnson', avatar: 'MJ', type: 'Sick Leave', from: '05 Jul 2023', to: '06 Jul 2023', status: 'approved', reason: 'Stomach flu.' },
+                { id: 103, employee: 'Sarah Williams', avatar: 'SW', type: 'Maternity Leave', from: '01 Aug 2023', to: '01 Nov 2023', status: 'pending', reason: 'Awaiting final HR approval.' },
+            ];
+
+            // --- DOM Elements ---
+            const views = {
+                dashboard: document.getElementById('dashboard-view'),
+                applyLeave: document.getElementById('apply-leave-view'),
+                leaveHistory: document.getElementById('leave-history-view'),
+                other: document.getElementById('other-views'),
+            };
+            const headerTitle = document.querySelector('.header-left h1');
+            const menuItems = document.querySelectorAll('.sidebar-menu .menu-item');
+            const leaveHistoryBody = document.getElementById('leave-history-body');
+            const leaveForm = document.getElementById('leave-form');
+            const modal = document.getElementById('leave-details-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body');
+            const modalFooter = document.getElementById('modal-footer');
+            const otherViewTitle = document.getElementById('other-view-title');
+
+            // --- Core Functions ---
+
+            function switchView(viewName, title, activeMenuItem) {
+                // Hide all views
+                Object.values(views).forEach(view => view.style.display = 'none');
+                
+                // Show the target view
+                if (views[viewName]) {
+                    views[viewName].style.display = 'block';
+                    views[viewName].classList.add('fade-in');
                 }
-            });
-        }
-        
-        // Populate leave history table
-        function populateLeaveHistory() {
-            leaveHistoryBody.innerHTML = '';
-            
-            leaveHistory.forEach(leave => {
-                const row = document.createElement('tr');
                 
-                row.innerHTML = `
-                    <td>${leave.type}</td>
-                    <td>${formatDate(leave.startDate)}</td>
-                    <td>${formatDate(leave.endDate)}</td>
-                    <td>${leave.duration} day${leave.duration !== 1 ? 's' : ''}</td>
-                    <td><span class="status-badge status-${leave.status}">${capitalizeFirstLetter(leave.status)}</span></td>
-                    <td><button class="btn btn-primary" onclick="viewLeaveDetails(${leave.id})">View</button></td>
-                `;
+                // Update header title
+                headerTitle.textContent = title;
                 
-                leaveHistoryBody.appendChild(row);
-            });
-        }
-        
-        // Populate team leaves table
-        function populateTeamLeaves() {
-            teamLeavesBody.innerHTML = '';
-            
-            teamLeaves.forEach(leave => {
-                const row = document.createElement('tr');
-                
-                row.innerHTML = `
-                    <td>${leave.employee}</td>
-                    <td>${leave.type}</td>
-                    <td>${formatDate(leave.startDate)}</td>
-                    <td>${formatDate(leave.endDate)}</td>
-                    <td>${leave.duration} day${leave.duration !== 1 ? 's' : ''}</td>
-                    <td><span class="status-badge status-${leave.status}">${capitalizeFirstLetter(leave.status)}</span></td>
-                    <td><button class="btn btn-primary" onclick="viewTeamLeaveDetails(${leave.id})">View</button></td>
-                `;
-                
-                teamLeavesBody.appendChild(row);
-            });
-        }
-        
-        // Apply for leave
-        function applyForLeave() {
-            const leaveType = document.getElementById('leave-type').value;
-            const startDate = document.getElementById('start-date').value;
-            const endDate = document.getElementById('end-date').value;
-            const reason = document.getElementById('reason').value;
-            const contact = document.getElementById('contact').value;
-            
-            // Calculate duration
-            const start = new Date(startDate);
-            const end = new Date(endDate);
-            const duration = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
-            
-            // Create new leave application
-            const newLeave = {
-                id: leaveHistory.length + 1,
-                type: document.getElementById('leave-type').options[document.getElementById('leave-type').selectedIndex].text,
-                startDate,
-                endDate,
-                duration,
-                status: "pending",
-                reason,
-                contact,
-                appliedOn: new Date().toISOString().split('T')[0]
+                // Update active menu item
+                menuItems.forEach(item => item.classList.remove('active'));
+                activeMenuItem.classList.add('active');
+            }
+
+            window.showDashboard = function() {
+                switchView('dashboard', 'Dashboard', menuItems[0]);
+            };
+
+            window.showApplyLeave = function() {
+                switchView('applyLeave', 'Apply for Leave', menuItems[1]);
+            };
+
+            window.showLeaveHistory = function() {
+                switchView('leaveHistory', 'Leave History', menuItems[2]);
+                filterLeaveHistory('all'); // Default to show all
+            };
+
+            // Placeholder functions for other menu items
+            const showFeatureNotImplemented = (title, menuItemIndex) => {
+                 switchView('other', title, menuItems[menuItemIndex]);
+                 otherViewTitle.textContent = title;
+            }
+            window.showTeamLeaves = () => showFeatureNotImplemented('Team Leaves', 3);
+            window.showCalendar = () => showFeatureNotImplemented('Calendar', 4);
+            window.showReports = () => showFeatureNotImplemented('Reports', 5);
+            window.showSettings = () => showFeatureNotImplemented('Settings', 6);
+            window.logout = () => alert('Logout action triggered!');
+
+
+            // --- Leave History Logic ---
+            const getStatusBadge = (status) => {
+                switch (status) {
+                    case 'approved': return 'badge-success';
+                    case 'pending': return 'badge-warning';
+                    case 'rejected': return 'badge-danger';
+                    default: return 'badge-light';
+                }
             };
             
-            leaveHistory.unshift(newLeave);
-            populateLeaveHistory();
-            
-            // Reset form
-            leaveForm.reset();
-            
-            // Show success message
-            alert('Your leave application has been submitted successfully!');
-            
-            // Return to dashboard
-            showDashboard();
-        }
-        
-        // Save settings
-        function saveSettings() {
-            // In a real application, this would save to the server
-            alert('Settings saved successfully!');
-        }
-        
-        // View leave details
-        function viewLeaveDetails(id) {
-            const leave = leaveHistory.find(l => l.id === id);
-            
-            if (leave) {
-                let detailsHtml = `
-                    <div class="form-group">
-                        <label>Leave Type:</label>
-                        <p>${leave.type}</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Dates:</label>
-                        <p>${formatDate(leave.startDate)} to ${formatDate(leave.endDate)} (${leave.duration} day${leave.duration !== 1 ? 's' : ''})</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Reason:</label>
-                        <p>${leave.reason}</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Contact During Leave:</label>
-                        <p>${leave.contact || 'Not provided'}</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Applied On:</label>
-                        <p>${formatDate(leave.appliedOn)}</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Status:</label>
-                        <p><span class="status-badge status-${leave.status}">${capitalizeFirstLetter(leave.status)}</span></p>
-                    </div>
-                `;
-                
-                if (leave.processedBy) {
-                    detailsHtml += `
-                        <div class="form-group">
-                            <label>Processed By:</label>
-                            <p>${leave.processedBy}</p>
-                        </div>
-                        <div class="form-group">
-                            <label>Processed On:</label>
-                            <p>${formatDate(leave.processedOn)}</p>
-                        </div>
-                    `;
+            function renderLeaveHistoryTable(data) {
+                leaveHistoryBody.innerHTML = '';
+                if(data.length === 0){
+                    leaveHistoryBody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No records found.</td></tr>`;
+                    return;
                 }
-                
-                if (leave.rejectionReason) {
-                    detailsHtml += `
-                        <div class="form-group">
-                            <label>Rejection Reason:</label>
-                            <p>${leave.rejectionReason}</p>
-                        </div>
+                data.forEach(leave => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${leave.type}</td>
+                        <td>${leave.startDate} to ${leave.endDate}</td>
+                        <td>${leave.duration}</td>
+                        <td>${leave.appliedOn}</td>
+                        <td><span class="badge ${getStatusBadge(leave.status)}">${leave.status}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-light" onclick="viewLeaveDetails(${leave.id})">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                        </td>
                     `;
-                }
-                
-                leaveDetailsContent.innerHTML = detailsHtml;
-                leaveDetailsModal.style.display = 'flex';
+                    leaveHistoryBody.appendChild(row);
+                });
             }
-        }
-        
-        // View team leave details
-        function viewTeamLeaveDetails(id) {
-            const leave = teamLeaves.find(l => l.id === id);
-            
-            if (leave) {
-                let detailsHtml = `
-                    <div class="form-group">
-                        <label>Employee:</label>
-                        <p>${leave.employee}</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Leave Type:</label>
-                        <p>${leave.type}</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Dates:</label>
-                        <p>${formatDate(leave.startDate)} to ${formatDate(leave.endDate)} (${leave.duration} day${leave.duration !== 1 ? 's' : ''})</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Status:</label>
-                        <p><span class="status-badge status-${leave.status}">${capitalizeFirstLetter(leave.status)}</span></p>
-                    </div>
-                `;
+
+            window.filterLeaveHistory = function(status) {
+                const tabs = document.querySelectorAll('.nav-tabs .nav-tab');
+                tabs.forEach(tab => tab.classList.remove('active'));
                 
-                // Add action buttons for managers
+                const activeTab = Array.from(tabs).find(tab => tab.textContent.toLowerCase() === status);
+                if (activeTab) activeTab.classList.add('active');
+
+                if (status === 'all') {
+                    renderLeaveHistoryTable(sampleHistory);
+                } else {
+                    const filteredData = sampleHistory.filter(leave => leave.status === status);
+                    renderLeaveHistoryTable(filteredData);
+                }
+            };
+
+            // --- Modal Logic ---
+            window.showModal = function() {
+                modal.classList.add('show');
+            };
+
+            window.hideModal = function() {
+                modal.classList.remove('show');
+            };
+
+            window.viewLeaveDetails = function(leaveId) {
+                const leave = sampleHistory.find(l => l.id === leaveId);
+                if (!leave) return;
+
+                modalTitle.textContent = `Details for ${leave.type}`;
+                modalBody.innerHTML = `
+                    <p><strong>Status:</strong> <span class="badge ${getStatusBadge(leave.status)}">${leave.status}</span></p>
+                    <p><strong>Dates:</strong> ${leave.startDate} to ${leave.endDate} (${leave.duration})</p>
+                    <p><strong>Applied On:</strong> ${leave.appliedOn}</p>
+                    <p><strong>Reason:</strong> ${leave.reason}</p>
+                    <p><strong>Contact during leave:</strong> ${leave.contact}</p>
+                    ${leave.status === 'rejected' && leave.rejectionReason ? `<p class="text-danger"><strong>Rejection Reason:</strong> ${leave.rejectionReason}</p>` : ''}
+                `;
+                modalFooter.innerHTML = `<button type="button" class="btn btn-light" onclick="hideModal()">Close</button>`;
+                
                 if (leave.status === 'pending') {
-                    detailsHtml += `
-                        <div class="form-group" style="display: flex; gap: 10px; margin-top: 20px;">
-                            <button class="btn btn-primary" style="background-color: var(--success-color);" onclick="approveLeave(${id})">Approve</button>
-                            <button class="btn btn-primary" style="background-color: var(--danger-color);" onclick="rejectLeave(${id})">Reject</button>
-                        </div>
-                    `;
+                    const cancelButton = document.createElement('button');
+                    cancelButton.className = 'btn btn-danger';
+                    cancelButton.innerHTML = `<i class="fas fa-times"></i> Cancel Application`;
+                    cancelButton.onclick = () => {
+                        alert(`Application ID ${leave.id} cancelled.`);
+                        hideModal();
+                    };
+                    modalFooter.appendChild(cancelButton);
                 }
                 
-                leaveDetailsContent.innerHTML = detailsHtml;
-                leaveDetailsModal.style.display = 'flex';
-            }
-        }
-        
-        // Approve leave (manager action)
-        function approveLeave(id) {
-            const leave = teamLeaves.find(l => l.id === id);
-            if (leave) {
-                leave.status = 'approved';
-                populateTeamLeaves();
-                closeModal();
-                alert('Leave approved successfully!');
-            }
-        }
-        
-        // Reject leave (manager action)
-        function rejectLeave(id) {
-            const reason = prompt('Please enter the reason for rejection:');
-            if (reason !== null) {
-                const leave = teamLeaves.find(l => l.id === id);
-                if (leave) {
-                    leave.status = 'rejected';
-                    leave.rejectionReason = reason;
-                    populateTeamLeaves();
-                    closeModal();
-                    alert('Leave rejected successfully!');
+                showModal();
+            };
+            
+            window.viewTeamLeaveDetails = function(leaveId) {
+                const leave = teamLeaves.find(l => l.id === leaveId);
+                if (!leave) return;
+
+                modalTitle.textContent = `Details for ${leave.employee}`;
+                modalBody.innerHTML = `
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="user-avatar" style="width: 50px; height: 50px; font-size: 1.2rem;">${leave.avatar}</div>
+                        <div>
+                            <div class="user-name" style="font-size: 1.1rem;">${leave.employee}</div>
+                        </div>
+                    </div>
+                    <p><strong>Leave Type:</strong> ${leave.type}</p>
+                    <p><strong>Status:</strong> <span class="badge ${getStatusBadge(leave.status)}">${leave.status}</span></p>
+                    <p><strong>Dates:</strong> ${leave.from} to ${leave.to}</p>
+                    <p><strong>Reason:</strong> ${leave.reason}</p>
+                `;
+                
+                modalFooter.innerHTML = `<button type="button" class="btn btn-light" onclick="hideModal()">Close</button>`;
+
+                if (leave.status === 'pending') {
+                     modalFooter.innerHTML += `
+                        <button type="button" class="btn btn-danger" onclick="alert('Rejected application for ${leave.employee}')">Reject</button>
+                        <button type="button" class="btn btn-success" onclick="alert('Approved application for ${leave.employee}')">Approve</button>
+                    `;
                 }
-            }
-        }
-        
-        // Close modal
-        function closeModal() {
-            leaveDetailsModal.style.display = 'none';
-        }
-        
-        // Logout function
-        function logout() {
-            // In a real application, this would clear the session
-            alert('You have been logged out successfully!');
-            // Redirect to login page
-            // window.location.href = 'login.html';
-        }
-        
-        // Helper functions
-        function formatDate(dateString) {
-            const options = { year: 'numeric', month: 'short', day: 'numeric' };
-            return new Date(dateString).toLocaleDateString('en-US', options);
-        }
-        
-        function capitalizeFirstLetter(string) {
-            return string.charAt(0).toUpperCase() + string.slice(1);
-        }
+
+                showModal();
+            };
+
+            // --- Form Submission ---
+            leaveForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Leave application submitted successfully!');
+                leaveForm.reset();
+                showDashboard();
+            });
+
+            // --- Initial Load ---
+            renderLeaveHistoryTable(sampleHistory);
+
+            // Add onclick handlers to sidebar menu items dynamically
+            const menuFunctions = [showDashboard, showApplyLeave, showLeaveHistory, showTeamLeaves, showCalendar, showReports, showSettings, logout];
+            menuItems.forEach((item, index) => {
+                item.onclick = () => menuFunctions[index]();
+            });
+        });
     </script>
+</body>
+</html>
 </body>
 </html>
