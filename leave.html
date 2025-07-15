@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LeaveEase | Leave Management System</title>
+    <title>LeaveEase Pro | Advanced Leave Management</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --primary: #6a5af9;
@@ -20,37 +21,38 @@
             --warning: #f5a524;
             --warning-light: #fef5e9;
             
-            --bg-color: #f8faff;
+            --bg-color: #f4f7fe;
             --card-bg: #ffffff;
             --text-dark: #18181b;
             --text-light: #71717a;
             --border-color: #e4e4e7;
             --white: #ffffff;
             
-            --sidebar-width: 260px;
-            --header-height: 70px;
-            --shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            --sidebar-width: 270px;
+            --header-height: 75px;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.02);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
             --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.07);
-            --radius: 12px;
-            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --radius: 14px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
+        body.dark-theme {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-dark: #e5e5e5;
+            --text-light: #a3a3a3;
+            --border-color: #2f2f2f;
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-dark);
-            overflow-x: hidden;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-dark); overflow-x: hidden; transition: var(--transition); }
+        
         /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 6px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
@@ -59,164 +61,159 @@
 
         /* Sidebar */
         .sidebar {
-            width: var(--sidebar-width);
-            background: var(--text-dark);
-            color: var(--white);
-            height: 100vh;
-            position: fixed;
-            transition: var(--transition);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
+            width: var(--sidebar-width); background: var(--card-bg); border-right: 1px solid var(--border-color);
+            height: 100vh; position: fixed; transition: var(--transition); z-index: 100; display: flex; flex-direction: column;
         }
         .sidebar-header {
-            padding: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-color);
         }
-        .sidebar-header h2 { font-weight: 700; font-size: 1.5rem; }
+        .sidebar-header h2 { font-weight: 700; font-size: 1.5rem; color: var(--text-dark); }
         .sidebar-header .logo-icon { font-size: 1.8rem; color: var(--primary); }
-        .sidebar-menu { padding: 1rem 0; flex-grow: 1; overflow-y: auto; }
+        .sidebar-menu { padding: 1rem; flex-grow: 1; overflow-y: auto; }
         .menu-item {
-            padding: 0.9rem 1.5rem;
-            margin: 0.2rem 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            border-radius: var(--radius);
-            transition: var(--transition);
-            position: relative;
-            color: rgba(255, 255, 255, 0.7);
+            padding: 0.9rem 1rem; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 12px;
+            cursor: pointer; border-radius: 10px; transition: var(--transition); position: relative; color: var(--text-light);
         }
-        .menu-item:hover { background: rgba(255, 255, 255, 0.05); color: var(--white); }
-        .menu-item.active { background: var(--primary); color: var(--white); font-weight: 600; box-shadow: 0 4px 10px rgba(106, 90, 249, 0.3); }
+        .menu-item:hover { background: var(--bg-color); color: var(--primary); }
+        .menu-item.active { background: var(--primary); color: var(--white); font-weight: 600; }
+        .menu-item.active::before {
+            content: ''; position: absolute; left: -1rem; top: 50%; transform: translateY(-50%); height: 60%;
+            width: 4px; background: var(--primary); border-radius: 0 4px 4px 0;
+        }
         .menu-item i { font-size: 1.1rem; width: 24px; text-align: center; }
         .menu-item .menu-text { font-weight: 500; }
         .menu-item.active .menu-text { font-weight: 600; }
         .menu-item .badge {
-            margin-left: auto; background: rgba(255, 255, 255, 0.2); color: var(--white);
-            padding: 0.2rem 0.5rem; border-radius: 20px; font-size: 0.7rem; font-weight: 600;
+            margin-left: auto; background: var(--danger-light); color: var(--danger);
+            padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
         }
+        .menu-item.active .badge { background: var(--white); color: var(--primary); }
 
         /* Main Content */
-        .main-content { flex: 1; margin-left: var(--sidebar-width); transition: var(--transition); }
+        .main-content { flex: 1; margin-left: var(--sidebar-width); transition: var(--transition); position: relative; }
         .header {
-            height: var(--header-height); background: var(--card-bg); display: flex;
-            align-items: center; justify-content: space-between; padding: 0 2rem;
-            border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 90;
+            height: var(--header-height); background: var(--card-bg); display: flex; align-items: center;
+            justify-content: space-between; padding: 0 2rem; border-bottom: 1px solid var(--border-color);
+            position: sticky; top: 0; z-index: 90;
         }
         .header-left h1 { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); }
         .header-right { display: flex; align-items: center; gap: 1.5rem; }
-        .header-icon {
-            position: relative; color: var(--text-light); cursor: pointer;
-            font-size: 1.3rem; transition: var(--transition);
+        .theme-toggle {
+            background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 50%;
+            width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: var(--text-light); transition: var(--transition);
         }
-        .header-icon:hover { color: var(--primary); }
-        .header-badge {
-            position: absolute; top: -5px; right: -8px; background: var(--danger); color: var(--white);
-            border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center;
-            justify-content: center; font-size: 0.65rem; font-weight: bold; border: 2px solid var(--card-bg);
-        }
+        .theme-toggle:hover { color: var(--primary); border-color: var(--primary); }
+        .theme-toggle .fa-sun { display: block; }
+        .theme-toggle .fa-moon { display: none; }
+        .dark-theme .theme-toggle .fa-sun { display: none; }
+        .dark-theme .theme-toggle .fa-moon { display: block; }
+        
         .user-profile { display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .user-avatar {
-            width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: var(--white); display: flex; align-items: center; justify-content: center;
-            font-weight: 600; font-size: 1rem;
+            width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: 600;
         }
-        .user-info .user-name { font-weight: 600; }
+        .user-info .user-name { font-weight: 600; color: var(--text-dark); }
         .user-info .user-role { font-size: 0.8rem; color: var(--text-light); }
-
+        
         /* Content Area */
         .content-wrapper { padding: 2rem; }
+        .view-content { display: none; }
+        .view-content.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ======== GRADIENT STAT CARDS ======== */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-        .stat-card {
-            border-radius: var(--radius); padding: 1.5rem; color: var(--white);
-            box-shadow: var(--shadow-lg); transition: var(--transition); position: relative; overflow: hidden;
+        /* Loader */
+        .loader-wrapper {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.7);
+            display: flex; align-items: center; justify-content: center; z-index: 999; display: none;
         }
-        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); }
-        .stat-card.primary { background: linear-gradient(135deg, #6a5af9, #d669f5); }
-        .stat-card.success { background: linear-gradient(135deg, #17c964, #43e4b5); }
-        .stat-card.warning { background: linear-gradient(135deg, #f5a524, #f7d468); }
-        .stat-card.danger { background: linear-gradient(135deg, #f31260, #ffa1c6); }
-        .stat-icon {
-            width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; margin-bottom: 1rem; background: rgba(255, 255, 255, 0.2);
+        .dark-theme .loader-wrapper { background: rgba(18, 18, 18, 0.7); }
+        .loader {
+            width: 48px; height: 48px; border: 5px solid var(--primary); border-bottom-color: transparent;
+            border-radius: 50%; display: inline-block; box-sizing: border-box; animation: rotation 1s linear infinite;
         }
-        .stat-value { font-size: 2rem; font-weight: 800; line-height: 1.2; margin-bottom: 0.5rem; }
-        .stat-label { font-size: 0.9rem; font-weight: 500; opacity: 0.9; }
+        @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* General Cards */
-        .card { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 2rem; overflow: hidden; }
+        /* Cards & Components */
+        .card { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow-md); margin-bottom: 2rem; }
         .card-header { padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; }
         .card-title { font-weight: 700; font-size: 1.2rem; }
-        .card-actions { display: flex; gap: 0.5rem; }
         .card-body { padding: 1.5rem; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card {
+            background: var(--card-bg); padding: 1.5rem; display: flex; align-items: center; gap: 1rem;
+            border-radius: var(--radius); box-shadow: var(--shadow-md); transition: var(--transition);
+        }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+        .stat-icon {
+            width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+        }
+        .stat-card.primary .stat-icon { background: var(--primary-light); color: var(--primary); }
+        .dark-theme .stat-card.primary .stat-icon { background: rgba(106, 90, 249, 0.2); }
+        .stat-card.success .stat-icon { background: var(--success-light); color: var(--success); }
+        .dark-theme .stat-card.success .stat-icon { background: rgba(23, 201, 100, 0.2); }
+        .stat-card.warning .stat-icon { background: var(--warning-light); color: var(--warning); }
+        .dark-theme .stat-card.warning .stat-icon { background: rgba(245, 165, 36, 0.2); }
+        .stat-value { font-size: 1.8rem; font-weight: 700; }
+        .stat-label { color: var(--text-light); font-size: 0.9rem; }
+        
+        /* Chart Card */
+        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
 
         /* Tables */
         .table-responsive { overflow-x: auto; }
         .table { width: 100%; border-collapse: collapse; }
         .table th, .table td { padding: 1rem 1.2rem; text-align: left; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
-        .table th {
-            font-weight: 600; color: var(--text-light); text-transform: uppercase;
-            font-size: 0.75rem; letter-spacing: 0.5px;
-        }
+        .table th { font-weight: 600; color: var(--text-light); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; }
         .table tbody tr:last-child td { border-bottom: none; }
         .table tbody tr:hover { background: var(--bg-color); }
-        .table .employee-cell { display: flex; align-items: center; gap: 10px; }
-        .table .employee-avatar {
-            width: 32px; height: 32px; border-radius: 50%; background: var(--primary-light); color: var(--white);
-            display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.8rem;
+        .employee-cell { display: flex; align-items: center; gap: 10px; }
+        .employee-avatar {
+            width: 36px; height: 36px; border-radius: 50%; color: var(--white);
+            display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem;
         }
-        .table .employee-name { font-weight: 500; }
+        .employee-name { font-weight: 600; }
 
-        /* Badges */
+        /* Status Badge */
         .status-badge {
-            display: inline-flex; align-items: center; gap: 5px; padding: 0.25rem 0.75rem;
-            border-radius: 50px; font-weight: 600; font-size: 0.75rem;
+            display: inline-flex; align-items: center; gap: 6px; padding: 0.25rem 0.75rem;
+            border-radius: 50px; font-weight: 600; font-size: 0.8rem;
         }
-        .status-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
+        .status-badge::before { content: ''; width: 8px; height: 8px; border-radius: 50%; }
         .status-badge.approved { background: var(--success-light); color: var(--success); }
         .status-badge.approved::before { background: var(--success); }
+        .dark-theme .status-badge.approved { background: rgba(23, 201, 100, 0.2); }
         .status-badge.pending { background: var(--warning-light); color: var(--warning); }
         .status-badge.pending::before { background: var(--warning); }
+        .dark-theme .status-badge.pending { background: rgba(245, 165, 36, 0.2); }
         .status-badge.rejected { background: var(--danger-light); color: var(--danger); }
         .status-badge.rejected::before { background: var(--danger); }
+        .dark-theme .status-badge.rejected { background: rgba(243, 18, 96, 0.2); }
 
         /* Buttons */
         .btn {
-            display: inline-flex; align-items: center; justify-content: center; padding: 0.6rem 1.2rem;
-            border-radius: var(--radius); font-weight: 600; font-size: 0.9rem; cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center; padding: 0.7rem 1.3rem;
+            border-radius: 10px; font-weight: 600; font-size: 0.9rem; cursor: pointer;
             transition: var(--transition); border: none; gap: 0.5rem;
         }
-        .btn:active { transform: scale(0.98); }
         .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
         .btn-primary { background: var(--primary); color: var(--white); }
         .btn-primary:hover { background: var(--secondary); box-shadow: 0 4px 15px rgba(106, 90, 249, 0.3); }
+        .btn-success { background: var(--success); color: var(--white); }
+        .btn-success:hover { background: #12a150; }
+        .btn-danger { background: var(--danger); color: var(--white); }
+        .btn-danger:hover { background: #c20e4b; }
         .btn-light { background: var(--border-color); color: var(--text-dark); }
+        .dark-theme .btn-light { background: #2f2f2f; color: var(--text-dark); }
         .btn-light:hover { background: #d4d4d8; }
-
-        /* Forms */
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-        .form-group { margin-bottom: 1.2rem; }
-        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
-        .form-control {
-            width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--border-color);
-            border-radius: var(--radius); font-size: 0.9rem; transition: var(--transition); background: var(--card-bg);
-        }
-        .form-control:focus {
-            outline: none; border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(106, 90, 249, 0.2);
-        }
-        textarea.form-control { min-height: 120px; resize: vertical; }
+        .dark-theme .btn-light:hover { background: #3f3f3f; }
 
         /* Modal */
+        /* (Same as previous version, styles hold up well) */
         .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6);
             display: flex; align-items: center; justify-content: center; z-index: 1000;
             opacity: 0; visibility: hidden; transition: opacity 0.3s ease;
         }
@@ -233,33 +230,27 @@
         .modal-close:hover { color: var(--danger); transform: rotate(90deg); }
         .modal-body { padding: 1.5rem; max-height: 70vh; overflow-y: auto; }
         .modal-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 0.5rem; }
-
-        /* Toast Notification */
+        
+        /* Toast */
         .toast {
-            position: fixed; top: 20px; right: 20px; background: var(--text-dark); color: var(--white);
-            padding: 1rem 1.5rem; border-radius: var(--radius); z-index: 1001;
-            box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 10px;
-            transform: translateX(calc(100% + 20px)); transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            position: fixed; bottom: 20px; right: 20px; background: var(--text-dark); color: var(--white);
+            padding: 1rem 1.5rem; border-radius: var(--radius); z-index: 1001; box-shadow: var(--shadow-lg);
+            display: flex; align-items: center; gap: 10px; transform: translateY(calc(100% + 20px));
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
         }
-        .toast.show { transform: translateX(0); }
+        .toast.show { transform: translateY(0); }
         .toast i { font-size: 1.2rem; }
-        .toast.success i { color: var(--success); }
-
-        /* Utility & Animation */
-        .fade-in { animation: fadeIn 0.5s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .toast.success { background: var(--success); color: var(--white); }
+        .toast.danger { background: var(--danger); color: var(--white); }
 
         /* Responsive */
+        @media (max-width: 1200px) { .dashboard-grid { grid-template-columns: 1fr; } }
         @media (max-width: 992px) {
             .sidebar { transform: translateX(-100%); }
-            .sidebar.show { transform: translateX(0); }
             .main-content { margin-left: 0; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
         }
-        @media (max-width: 768px) {
-            .header { padding: 0 1rem; }
-            .content-wrapper { padding: 1.5rem 1rem; }
-            .stats-grid, .form-grid { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 576px) { .stats-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -272,295 +263,323 @@
                 <h2>LeaveEase</h2>
             </div>
             <div class="sidebar-menu">
-                <div class="menu-item active">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span class="menu-text">Dashboard</span>
-                </div>
-                <div class="menu-item">
-                    <i class="fas fa-plus-circle"></i>
-                    <span class="menu-text">Apply for Leave</span>
-                </div>
-                <div class="menu-item">
-                    <i class="fas fa-history"></i>
-                    <span class="menu-text">My History</span>
-                </div>
-                <div class="menu-item">
-                    <i class="fas fa-users"></i>
-                    <span class="menu-text">Team on Leave</span>
-                    <span class="badge">3</span>
-                </div>
-                <div class="menu-item">
-                    <i class="fas fa-chart-bar"></i>
-                    <span class="menu-text">Reports</span>
-                </div>
-                <div class="menu-item">
-                    <i class="fas fa-cog"></i>
-                    <span class="menu-text">Settings</span>
-                </div>
+                <div class="menu-item" data-view="dashboard"><i class="fas fa-tachometer-alt"></i><span class="menu-text">Dashboard</span></div>
+                <div class="menu-item" data-view="apply"><i class="fas fa-plus-circle"></i><span class="menu-text">Apply for Leave</span></div>
+                <div class="menu-item" data-view="history"><i class="fas fa-history"></i><span class="menu-text">My History</span></div>
+                <div class="menu-item" data-view="team"><i class="fas fa-users"></i><span class="menu-text">Team on Leave</span><span class="badge">3</span></div>
+                <div class="menu-item" data-view="reports"><i class="fas fa-chart-bar"></i><span class="menu-text">Reports</span></div>
             </div>
             <div class="sidebar-menu">
-                 <div class="menu-item">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span class="menu-text">Logout</span>
-                </div>
+                 <div class="menu-item" data-view="logout"><i class="fas fa-sign-out-alt"></i><span class="menu-text">Logout</span></div>
             </div>
         </div>
 
         <!-- Main Content -->
         <div class="main-content">
+            <div class="loader-wrapper"><div class="loader"></div></div>
             <!-- Header -->
             <div class="header">
-                <div class="header-left">
-                    <h1 id="view-title">Dashboard</h1>
-                </div>
+                <div class="header-left"><h1 id="view-title">Dashboard</h1></div>
                 <div class="header-right">
-                    <div class="header-icon">
-                        <i class="fas fa-bell"></i>
-                        <span class="header-badge">3</span>
-                    </div>
+                    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                        <i class="fas fa-sun"></i><i class="fas fa-moon"></i>
+                    </button>
                     <div class="user-profile">
                         <div class="user-avatar">JD</div>
-                        <div class="user-info">
-                            <div class="user-name">John Doe</div>
-                            <div class="user-role">Manager</div>
-                        </div>
+                        <div class="user-info"><div class="user-name">John Doe</div><div class="user-role">Manager</div></div>
                     </div>
                 </div>
             </div>
 
             <!-- Content Wrapper -->
             <div class="content-wrapper">
-
-                <!-- Dashboard View -->
-                <div id="dashboard-view" class="view-content fade-in">
-                    <!-- Gradient Stats Cards -->
-                    <div class="stats-grid">
-                        <div class="stat-card primary">
-                            <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
-                            <div class="stat-value">18</div>
-                            <div class="stat-label">Available Leave Days</div>
-                        </div>
-                        <div class="stat-card warning">
-                            <div class="stat-icon"><i class="fas fa-clock"></i></div>
-                            <div class="stat-value">3</div>
-                            <div class="stat-label">Pending Requests</div>
-                        </div>
-                        <div class="stat-card success">
-                            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
-                            <div class="stat-value">12</div>
-                            <div class="stat-label">Leaves Approved (YTD)</div>
-                        </div>
-                        <div class="stat-card danger">
-                            <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
-                            <div class="stat-value">2</div>
-                            <div class="stat-label">Leaves Rejected (YTD)</div>
-                        </div>
+                <div id="dashboard-view" class="view-content">
+                     <div class="stats-grid">
+                        <div class="stat-card primary"><div class="stat-icon"><i class="fas fa-calendar-day"></i></div><div><div class="stat-value">18</div><div class="stat-label">Available Days</div></div></div>
+                        <div class="stat-card warning"><div class="stat-icon"><i class="fas fa-clock"></i></div><div><div class="stat-value">3</div><div class="stat-label">Pending Requests</div></div></div>
+                        <div class="stat-card success"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div><div class="stat-value">12</div><div class="stat-label">Approved (YTD)</div></div></div>
+                        <div class="stat-card danger"><div class="stat-icon"><i class="fas fa-times-circle"></i></div><div><div class="stat-value">2</div><div class="stat-label">Rejected (YTD)</div></div></div>
                     </div>
-
-                    <!-- Recent Leaves Card -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">My Recent Applications</h3>
-                            <div class="card-actions">
-                                <button class="btn btn-sm btn-primary" onclick="switchView(1)">
-                                    <i class="fas fa-plus"></i> New Application
-                                </button>
+                    <div class="dashboard-grid">
+                        <div class="card">
+                            <div class="card-header"><h3 class="card-title">Recent Team Requests</h3></div>
+                            <div class="card-body">
+                                <div class="table-responsive"><table class="table" id="dashboard-team-table"></table></div>
                             </div>
                         </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>Leave Type</th>
-                                            <th>From</th>
-                                            <th>To</th>
-                                            <th>Duration</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Annual Leave</td>
-                                            <td>15 Jul 2023</td>
-                                            <td>20 Jul 2023</td>
-                                            <td>5 days</td>
-                                            <td><span class="status-badge approved">Approved</span></td>
-                                            <td><button class="btn btn-sm btn-light"><i class="fas fa-eye"></i></button></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Sick Leave</td>
-                                            <td>05 Aug 2023</td>
-                                            <td>07 Aug 2023</td>
-                                            <td>2 days</td>
-                                            <td><span class="status-badge pending">Pending</span></td>
-                                            <td><button class="btn btn-sm btn-light"><i class="fas fa-eye"></i></button></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Emergency Leave</td>
-                                            <td>10 Jun 2023</td>
-                                            <td>12 Jun 2023</td>
-                                            <td>2 days</td>
-                                            <td><span class="status-badge rejected">Rejected</span></td>
-                                            <td><button class="btn btn-sm btn-light"><i class="fas fa-eye"></i></button></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                        <div class="card">
+                            <div class="card-header"><h3 class="card-title">Leave Breakdown</h3></div>
+                            <div class="card-body" style="display: flex; align-items: center; justify-content: center;">
+                                <canvas id="leave-breakdown-chart"></canvas>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Apply Leave View -->
-                <div id="apply-leave-view" class="view-content" style="display: none;">
+                <div id="apply-view" class="view-content">
                     <div class="card">
                         <div class="card-header"><h3 class="card-title">New Leave Application</h3></div>
                         <div class="card-body">
                             <form id="leave-form">
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label class="form-label">Leave Type</label>
-                                        <select class="form-control" required>
-                                            <option value="">Select Leave Type...</option>
-                                            <option>Annual Leave</option>
-                                            <option>Sick Leave</option>
-                                            <option>Unpaid Leave</option>
-                                            <option>Other</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Available Balance</label>
-                                        <input type="text" class="form-control" value="18 days" disabled>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Start Date</label>
-                                        <input type="date" class="form-control" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">End Date</label>
-                                        <input type="date" class="form-control" required>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Reason for Leave</label>
-                                    <textarea class="form-control" rows="4" placeholder="Please provide a brief reason for your leave..." required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Upload Document (Optional)</label>
-                                    <input type="file" class="form-control">
-                                </div>
+                                <div class="form-group"><label class="form-label">Leave Type</label><select class="form-control" required><option>Annual</option><option>Sick</option></select></div>
+                                <div class="form-group"><label class="form-label">Start Date</label><input type="date" class="form-control" required></div>
+                                <div class="form-group"><label class="form-label">End Date</label><input type="date" class="form-control" required></div>
+                                <div class="form-group"><label class="form-label">Reason</label><textarea class="form-control" rows="4" required></textarea></div>
                                 <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem;">
-                                    <button type="button" class="btn btn-light" onclick="switchView(0)">Cancel</button>
-                                    <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Submit Application</button>
+                                    <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Submit</button>
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
-
-                 <!-- Other Views (Placeholder) -->
-                <div id="other-view" class="view-content" style="display: none;">
-                     <div class="card">
-                        <div class="card-body" style="text-align: center; padding: 4rem;">
-                            <i class="fas fa-tools fa-3x" style="color: var(--text-light); margin-bottom: 1rem;"></i>
-                            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Feature In Development</h3>
-                            <p style="color: var(--text-light);">This page is currently under construction. Please check back later!</p>
-                        </div>
+                
+                <div id="history-view" class="view-content">
+                    <div class="card">
+                        <div class="card-header"><h3 class="card-title">My Leave History</h3></div>
+                        <div class="card-body table-responsive"><table class="table" id="my-history-table"></table></div>
                     </div>
                 </div>
 
+                <div id="team-view" class="view-content">
+                    <div class="card">
+                        <div class="card-header"><h3 class="card-title">Team Leave Requests</h3></div>
+                        <div class="card-body table-responsive"><table class="table" id="team-leaves-table"></table></div>
+                    </div>
+                </div>
+
+                <div id="reports-view" class="view-content">
+                    <div class="card"><div class="card-body text-center" style="padding: 4rem;"><i class="fas fa-tools fa-3x" style="color: var(--text-light); margin-bottom: 1rem;"></i><h3>Reports Feature Coming Soon</h3></div></div>
+                </div>
             </div>
         </div>
     </div>
     
+    <!-- Modal -->
+    <div class="modal" id="leave-details-modal">
+        <div class="modal-dialog">
+            <div class="modal-header"><h5 class="modal-title" id="modal-title">Leave Details</h5><button type="button" class="modal-close" id="modal-close-btn">×</button></div>
+            <div class="modal-body" id="modal-body"></div>
+            <div class="modal-footer" id="modal-footer"></div>
+        </div>
+    </div>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const menuItems = document.querySelectorAll('.sidebar .menu-item');
-            const views = document.querySelectorAll('.view-content');
-            const viewTitle = document.getElementById('view-title');
-            const leaveForm = document.getElementById('leave-form');
-            const toastContainer = document.getElementById('toast-container');
-
-            // --- View Switching Logic ---
-            const viewTitles = ['Dashboard', 'Apply for Leave', 'My History', 'Team on Leave', 'Reports', 'Settings'];
-
-            function switchView(index) {
-                // Update active menu item
-                menuItems.forEach((item, i) => {
-                    item.classList.toggle('active', i === index);
+        const App = {
+            // --- DATA (Simulates a backend API response) ---
+            myLeaves: [
+                { id: 1, type: 'Annual', from: '2023-07-15', to: '2023-07-20', duration: 5, status: 'approved', reason: 'Family vacation to the beach.'},
+                { id: 2, type: 'Sick', from: '2023-08-05', to: '2023-08-07', duration: 2, status: 'pending', reason: 'Fever and cold.'},
+                { id: 3, type: 'Emergency', from: '2023-06-10', to: '2023-06-12', duration: 2, status: 'rejected', reason: 'Family emergency.', rejectionReason: 'Insufficient notice provided.' },
+            ],
+            teamLeaves: [
+                { id: 101, employee: 'Jane Smith', avatar: 'JS', avatarBg: '#f8961e', type: 'Annual', from: '2023-07-10', to: '2023-07-17', duration: 6, status: 'approved', reason: 'Extended weekend trip.' },
+                { id: 102, employee: 'Mike Johnson', avatar: 'MJ', avatarBg: '#43aa8b', type: 'Sick', from: '2023-07-05', to: '2023-07-06', duration: 2, status: 'approved', reason: 'Stomach flu.' },
+                { id: 103, employee: 'Sarah Williams', avatar: 'SW', avatarBg: '#f72585', type: 'Maternity', from: '2023-08-01', to: '2023-11-01', duration: 65, status: 'pending', reason: 'Awaiting final HR approval.' },
+                { id: 104, employee: 'David Chen', avatar: 'DC', avatarBg: '#4895ef', type: 'Paternity', from: '2023-09-11', to: '2023-09-15', duration: 5, status: 'pending', reason: 'Welcoming a new baby.' },
+                { id: 105, employee: 'Emily White', avatar: 'EW', avatarBg: '#560bad', type: 'Annual', from: '2023-09-18', to: '2023-09-22', duration: 5, status: 'pending', reason: 'Personal time off.' },
+            ],
+            
+            // --- UI ELEMENTS ---
+            elements: {
+                menuItems: document.querySelectorAll('.sidebar .menu-item'),
+                views: document.querySelectorAll('.view-content'),
+                viewTitle: document.getElementById('view-title'),
+                loader: document.querySelector('.loader-wrapper'),
+                themeToggle: document.getElementById('theme-toggle'),
+                modal: document.getElementById('leave-details-modal'),
+                modalTitle: document.getElementById('modal-title'),
+                modalBody: document.getElementById('modal-body'),
+                modalFooter: document.getElementById('modal-footer'),
+                modalCloseBtn: document.getElementById('modal-close-btn'),
+            },
+            
+            // --- INITIALIZATION ---
+            init() {
+                this.setupEventListeners();
+                this.initTheme();
+                this.switchView('dashboard');
+            },
+            
+            // --- EVENT LISTENERS ---
+            setupEventListeners() {
+                this.elements.menuItems.forEach(item => {
+                    item.addEventListener('click', () => this.handleMenuClick(item.dataset.view));
                 });
-
-                // Update header title
-                viewTitle.textContent = viewTitles[index] || 'LeaveEase';
-
-                // Show the correct view
-                views.forEach((view, i) => {
-                    // Use a placeholder for unimplemented views
-                    if (index > 1) { // 0=Dashboard, 1=Apply
-                         views[0].style.display = 'none';
-                         views[1].style.display = 'none';
-                         views[2].style.display = 'block';
-                         views[2].classList.add('fade-in');
-                    } else {
-                        view.style.display = i === index ? 'block' : 'none';
-                        if (i === index) view.classList.add('fade-in');
+                this.elements.themeToggle.addEventListener('click', () => this.toggleTheme());
+                this.elements.modalCloseBtn.addEventListener('click', () => this.closeModal());
+                document.addEventListener('click', (e) => {
+                    if (e.target.matches('.btn[data-action="view"]')) {
+                        const type = e.target.dataset.type;
+                        const id = parseInt(e.target.dataset.id);
+                        this.showModal(type, id);
+                    }
+                    if (e.target.matches('.btn[data-action="updateStatus"]')) {
+                        const id = parseInt(e.target.dataset.id);
+                        const newStatus = e.target.dataset.status;
+                        this.updateLeaveStatus(id, newStatus);
                     }
                 });
-            }
-            
-            // Make switchView globally accessible for inline onclick
-            window.switchView = switchView;
+                document.getElementById('leave-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.showToast('Application submitted!', 'success');
+                    e.target.reset();
+                    this.switchView('dashboard');
+                });
+            },
 
-            // Add click listeners to menu items
-            menuItems.forEach((item, index) => {
-                // Skip the last menu item (Logout)
-                if (index < menuItems.length - 1) {
-                    item.addEventListener('click', () => switchView(index));
+            // --- VIEW MANAGEMENT ---
+            handleMenuClick(view) {
+                if (view === 'logout') {
+                    this.showToast('You have been logged out.');
+                } else {
+                    this.switchView(view);
                 }
-            });
+            },
+            switchView(viewName) {
+                this.elements.loader.style.display = 'flex';
+                this.elements.menuItems.forEach(item => item.classList.toggle('active', item.dataset.view === viewName));
+                
+                const titles = { dashboard: 'Dashboard', apply: 'New Application', history: 'My History', team: 'Team Requests', reports: 'Reports' };
+                this.elements.viewTitle.textContent = titles[viewName];
+
+                setTimeout(() => {
+                    this.elements.views.forEach(view => view.classList.remove('active'));
+                    const activeView = document.getElementById(`${viewName}-view`);
+                    if (activeView) activeView.classList.add('active');
+                    
+                    if (viewName === 'dashboard') this.renderDashboard();
+                    if (viewName === 'history') this.renderTable('my-history-table', this.myLeaves, 'myLeave');
+                    if (viewName === 'team') this.renderTable('team-leaves-table', this.teamLeaves, 'teamLeave');
+
+                    this.elements.loader.style.display = 'none';
+                }, 300);
+            },
+
+            // --- RENDERING ---
+            renderDashboard() {
+                this.renderTable('dashboard-team-table', this.teamLeaves.slice(0, 3), 'teamLeave');
+                this.renderLeaveChart();
+            },
+            renderTable(tableId, data, type) {
+                const tableContainer = document.getElementById(tableId);
+                if (!tableContainer) return;
+                
+                const isTeamTable = type === 'teamLeave';
+                let headers = `<th>Type</th><th>From</th><th>To</th><th>Days</th><th>Status</th><th></th>`;
+                if (isTeamTable) {
+                    headers = `<th>Employee</th><th>Type</th><th>Dates</th><th>Status</th><th></th>`;
+                }
+
+                const rows = data.map(item => {
+                    const statusBadge = `<span class="status-badge ${item.status}">${item.status}</span>`;
+                    const viewButton = `<button class="btn btn-sm btn-light" data-action="view" data-type="${type}" data-id="${item.id}"><i class="fas fa-eye"></i></button>`;
+                    if (isTeamTable) {
+                        return `<tr>
+                            <td><div class="employee-cell"><div class="employee-avatar" style="background-color: ${item.avatarBg};">${item.avatar}</div><span class="employee-name">${item.employee}</span></div></td>
+                            <td>${item.type}</td>
+                            <td>${item.from} - ${item.to}</td>
+                            <td data-status-cell-id="${item.id}">${statusBadge}</td>
+                            <td>${viewButton}</td>
+                        </tr>`;
+                    }
+                    return `<tr><td>${item.type}</td><td>${item.from}</td><td>${item.to}</td><td>${item.duration}</td><td>${statusBadge}</td><td>${viewButton}</td></tr>`;
+                }).join('');
+                
+                tableContainer.innerHTML = `<thead><tr>${headers}</tr></thead><tbody>${rows || `<tr><td colspan="6" class="text-center" style="padding: 2rem;">No data available.</td></tr>`}</tbody>`;
+            },
+            renderLeaveChart() {
+                const ctx = document.getElementById('leave-breakdown-chart');
+                if (!ctx) return;
+                if (window.leaveChart instanceof Chart) window.leaveChart.destroy();
+                
+                const counts = this.myLeaves.reduce((acc, { type }) => {
+                    acc[type] = (acc[type] || 0) + 1;
+                    return acc;
+                }, {});
+
+                window.leaveChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(counts),
+                        datasets: [{
+                            data: Object.values(counts),
+                            backgroundColor: ['#6a5af9', '#f5a524', '#f31260', '#17c964', '#4895ef'],
+                            borderWidth: 0,
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom' } } }
+                });
+            },
+
+            // --- MODAL LOGIC ---
+            showModal(type, id) {
+                const data = type === 'myLeave' ? this.myLeaves : this.teamLeaves;
+                const item = data.find(i => i.id === id);
+                if (!item) return;
+
+                let bodyHtml = `
+                    <p><strong>Type:</strong> ${item.type}</p>
+                    <p><strong>Dates:</strong> ${item.from} to ${item.to} (${item.duration} days)</p>
+                    <p><strong>Status:</strong> <span class="status-badge ${item.status}">${item.status}</span></p>
+                    <p><strong>Reason:</strong> ${item.reason}</p>
+                `;
+                if (item.rejectionReason) bodyHtml += `<p class="text-danger"><strong>Rejection Reason:</strong> ${item.rejectionReason}</p>`;
+
+                let footerHtml = `<button class="btn btn-light" onclick="App.closeModal()">Close</button>`;
+                if (type === 'teamLeave' && item.status === 'pending') {
+                    footerHtml += `
+                        <button class="btn btn-danger" data-action="updateStatus" data-id="${item.id}" data-status="rejected">Reject</button>
+                        <button class="btn btn-success" data-action="updateStatus" data-id="${item.id}" data-status="approved">Approve</button>
+                    `;
+                }
+
+                this.elements.modalTitle.textContent = `Leave Details for ${item.employee || 'You'}`;
+                this.elements.modalBody.innerHTML = bodyHtml;
+                this.elements.modalFooter.innerHTML = footerHtml;
+                this.elements.modal.classList.add('show');
+            },
+            closeModal() {
+                this.elements.modal.classList.remove('show');
+            },
             
-            // Handle logout click
-            menuItems[menuItems.length - 1].addEventListener('click', () => {
-                showToast('You have been logged out.', 'success');
-            });
+            // --- ACTIONS ---
+            updateLeaveStatus(id, newStatus) {
+                const item = this.teamLeaves.find(i => i.id === id);
+                if (item) {
+                    item.status = newStatus;
+                    this.closeModal();
+                    this.showToast(`Request has been ${newStatus}.`, newStatus === 'approved' ? 'success' : 'danger');
+                    // Re-render the relevant table to show the change
+                    this.renderTable('team-leaves-table', this.teamLeaves, 'teamLeave');
+                    this.renderTable('dashboard-team-table', this.teamLeaves.slice(0, 3), 'teamLeave');
+                }
+            },
 
-
-            // --- Toast Notification Logic ---
-            function showToast(message, type = 'success') {
+            // --- THEME & TOAST ---
+            initTheme() {
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme === 'dark') {
+                    document.body.classList.add('dark-theme');
+                }
+            },
+            toggleTheme() {
+                document.body.classList.toggle('dark-theme');
+                localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
+            },
+            showToast(message, type = 'success') {
                 const toast = document.createElement('div');
                 toast.className = `toast ${type}`;
                 toast.innerHTML = `<i class="fas fa-check-circle"></i><span>${message}</span>`;
-                toastContainer.appendChild(toast);
-
-                setTimeout(() => {
-                    toast.classList.add('show');
-                }, 100);
-
+                document.getElementById('toast-container').appendChild(toast);
+                setTimeout(() => toast.classList.add('show'), 100);
                 setTimeout(() => {
                     toast.classList.remove('show');
-                    setTimeout(() => {
-                        toast.remove();
-                    }, 500);
+                    setTimeout(() => toast.remove(), 500);
                 }, 3000);
             }
+        };
 
-            // --- Form Submission Logic ---
-            if (leaveForm) {
-                leaveForm.addEventListener('submit', function (e) {
-                    e.preventDefault();
-                    showToast('Leave application submitted successfully!');
-                    leaveForm.reset();
-                    // Switch back to the dashboard after submission
-                    setTimeout(() => switchView(0), 500);
-                });
-            }
-
-            // --- Initial State ---
-            switchView(0); // Show dashboard on page load
-
-        });
+        document.addEventListener('DOMContentLoaded', () => App.init());
     </script>
-
 </body>
 </html>
