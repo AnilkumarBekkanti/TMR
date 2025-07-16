@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow | Project & Task Manager</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #0077b6; /* Professional Blue */
+            --primary-light: #00b4d8;
+            --secondary: #03045e;
+            --success: #2a9d8f; /* Muted Green */
+            --danger: #e76f51; /* Muted Red */
+            --warning: #f4a261; /* Muted Orange */
+            --info: #48cae4;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --white: #ffffff;
+            --sidebar-width: 280px;
+            --header-height: 70px;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+        
+        /* Layout, Sidebar, Header, Cards, Tables, etc. (Mostly unchanged from previous file) */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+        .app-container { display: flex; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-width); background: linear-gradient(135deg, var(--primary), var(--secondary)); color: var(--white); height: 100vh; position: fixed; transition: var(--transition); z-index: 100; box-shadow: var(--shadow); }
+        .sidebar-header { padding: 1.5rem; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .sidebar-header h2 { font-weight: 600; }
+        .sidebar-header .logo-icon { font-size: 1.8rem; }
+        .sidebar-menu { padding: 1rem 0; height: calc(100vh - var(--header-height)); overflow-y: auto; }
+        .menu-item { padding: 0.8rem 1.5rem; margin: 0.2rem 0; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: var(--transition); position: relative; color: rgba(255, 255, 255, 0.8); }
+        .menu-item:hover, .menu-item.active { background: rgba(255, 255, 255, 0.1); color: var(--white); }
+        .menu-item.active::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background: var(--white); border-radius: 0 4px 4px 0; }
+        .menu-item i { font-size: 1.1rem; width: 24px; text-align: center; }
+        .menu-item .menu-text { font-weight: 500; }
+        .main-content { flex: 1; margin-left: var(--sidebar-width); transition: var(--transition); }
+        .header { height: var(--header-height); background: var(--white); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 90; }
+        .header-left h1 { font-size: 1.5rem; font-weight: 600; }
+        .header-right { display: flex; align-items: center; gap: 1.5rem; }
+        .user-profile { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 1rem; }
+        .user-name { font-weight: 500; }
+        .user-role { font-size: 0.8rem; color: var(--gray); }
+        .content-wrapper { padding: 2rem; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--white); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow); transition: var(--transition); position: relative; overflow: hidden; }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; }
+        .stat-card.primary::before { background: var(--primary); }
+        .stat-card.success::before { background: var(--success); }
+        .stat-card.warning::before { background: var(--warning); }
+        .stat-card.danger::before { background: var(--danger); }
+        .stat-icon { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1rem; }
+        .stat-card.primary .stat-icon { background: rgba(0, 119, 182, 0.1); color: var(--primary); }
+        .stat-card.success .stat-icon { background: rgba(42, 157, 143, 0.1); color: var(--success); }
+        .stat-card.warning .stat-icon { background: rgba(244, 162, 97, 0.1); color: var(--warning); }
+        .stat-card.danger .stat-icon { background: rgba(231, 111, 81, 0.1); color: var(--danger); }
+        .stat-value { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .stat-label { color: var(--gray); font-size: 0.9rem; }
+        .card { background: var(--white); border-radius: 12px; box-shadow: var(--shadow); margin-bottom: 2rem; overflow: hidden; }
+        .card-header { padding: 1.2rem 1.5rem; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: space-between; }
+        .card-title { font-weight: 600; font-size: 1.2rem; }
+        .card-actions { display: flex; gap: 0.5rem; }
+        .card-body { padding: 1.5rem; }
+        .table-responsive { overflow-x: auto; }
+        .table { width: 100%; border-collapse: collapse; }
+        .table th, .table td { padding: 1rem 1.2rem; text-align: left; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+        .table th { font-weight: 600; color: var(--gray); background: #fafafa; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
+        .table tbody tr:hover { background: #fdfdfd; }
+        .badge { display: inline-block; padding: 0.35rem 0.65rem; font-size: 0.75rem; font-weight: 600; line-height: 1; text-align: center; white-space: nowrap; vertical-align: baseline; border-radius: 50px; }
+        .badge-primary { background: rgba(0, 119, 182, 0.1); color: var(--primary); }
+        .badge-success { background: rgba(42, 157, 143, 0.1); color: var(--success); }
+        .badge-warning { background: rgba(244, 162, 97, 0.1); color: var(--warning); }
+        .badge-danger { background: rgba(231, 111, 81, 0.1); color: var(--danger); }
+        .badge-info { background: rgba(72, 202, 228, 0.1); color: var(--info); }
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 500; font-size: 0.9rem; cursor: pointer; transition: var(--transition); border: none; gap: 0.5rem; }
+        .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+        .btn-primary { background: var(--primary); color: var(--white); }
+        .btn-primary:hover { background: var(--secondary); }
+        .btn-light { background: var(--light); color: var(--dark); border: 1px solid #dee2e6; }
+        .btn-light:hover { background: #e2e6ea; }
+        .form-group { margin-bottom: 1.2rem; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.9rem; }
+        .form-control { width: 100%; padding: 0.8rem 1rem; border: 1px solid #ced4da; border-radius: 8px; font-size: 0.9rem; transition: var(--transition); }
+        .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.2); }
+        textarea.form-control { min-height: 120px; resize: vertical; }
+        .form-select { appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right .75rem center; background-size: 16px 12px; padding-right: 2.5rem; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; visibility: hidden; transition: var(--transition); }
+        .modal.show { opacity: 1; visibility: visible; }
+        .modal-dialog { width: 90%; max-width: 500px; background: var(--white); border-radius: 12px; transform: translateY(-50px); transition: var(--transition); }
+        .modal.show .modal-dialog { transform: translateY(0); }
+        .modal-header { padding: 1.2rem 1.5rem; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: space-between; }
+        .modal-title { font-weight: 600; font-size: 1.2rem; }
+        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray); }
+        .modal-body { padding: 1.5rem; max-height: 70vh; overflow-y: auto; }
+        .modal-footer { padding: 1rem 1.5rem; border-top: 1px solid #f0f0f0; display: flex; justify-content: flex-end; gap: 0.5rem; }
+        .nav-tabs { display: flex; border-bottom: 1px solid #dee2e6; margin-bottom: 1.5rem; }
+        .nav-tab { padding: 0.8rem 1.2rem; cursor: pointer; font-weight: 500; color: var(--gray); border-bottom: 2px solid transparent; transition: var(--transition); }
+        .nav-tab:hover { color: var(--primary); }
+        .nav-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+        
+        /* New Styles for Project Cards */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .project-card {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            transition: var(--transition);
+        }
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .project-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .project-card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        .project-card-status {
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--primary);
+            border-radius: 8px;
+            transition: width 0.5s ease-in-out;
+        }
+        .project-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #f0f0f0;
+            padding-top: 1rem;
+            margin-top: auto;
+        }
+        .team-avatars .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--secondary);
+            color: var(--white);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            margin-left: -10px;
+            border: 2px solid var(--white);
+        }
+        .team-avatars .avatar:first-child { margin-left: 0; }
+        
+        @media (max-width: 992px) { .sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; } }
+        @media (max-width: 768px) { .header { padding: 0 1rem; } .content-wrapper { padding: 1.5rem 1rem; } .stats-grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 576px) { .stats-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-check-double logo-icon"></i>
+                <h2>TaskFlow</h2>
+            </div>
+            <nav class="sidebar-menu">
+                <div class="menu-item active" onclick="showDashboard()">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span class="menu-text">Dashboard</span>
+                </div>
+                <div class="menu-item" onclick="showMyTasks()">
+                    <i class="fas fa-user-check"></i>
+                    <span class="menu-text">My Tasks</span>
+                </div>
+                <div class="menu-item" onclick="showProjects()">
+                    <i class="fas fa-folder-open"></i>
+                    <span class="menu-text">Projects</span>
+                </div>
+                <div class="menu-item" onclick="openNewTaskModal()">
+                    <i class="fas fa-plus-circle"></i>
+                    <span class="menu-text">New Task</span>
+                </div>
+                <div class="menu-item" onclick="showReports()">
+                    <i class="fas fa-chart-pie"></i>
+                    <span class="menu-text">Reports</span>
+                </div>
+                <div class="menu-item" onclick="showSettings()">
+                    <i class="fas fa-cog"></i>
+                    <span class="menu-text">Settings</span>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1 id="page-title">Dashboard</h1>
+                </div>
+                <div class="header-right">
+                    <div class="user-profile">
+                        <div class="user-avatar">PM</div>
+                        <div>
+                            <div class="user-name">Pat Manager</div>
+                            <div class="user-role">Project Lead</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Wrapper -->
+            <div class="content-wrapper">
+                <!-- Dashboard View -->
+                <div id="dashboard-view">
+                    <div class="stats-grid">
+                        <div class="stat-card primary">
+                            <div class="stat-icon"><i class="fas fa-folder-open"></i></div>
+                            <div class="stat-value" id="stat-active-projects">5</div>
+                            <div class="stat-label">Active Projects</div>
+                        </div>
+                        <div class="stat-card warning">
+                            <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
+                            <div class="stat-value" id="stat-due-today">8</div>
+                            <div class="stat-label">Tasks Due Today</div>
+                        </div>
+                        <div class="stat-card danger">
+                            <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="stat-value" id="stat-overdue">3</div>
+                            <div class="stat-label">Overdue Tasks</div>
+                        </div>
+                        <div class="stat-card success">
+                            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="stat-value" id="stat-completed">12</div>
+                            <div class="stat-label">Completed This Week</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">My High-Priority Tasks</h3>
+                            <div class="card-actions">
+                                <button class="btn btn-sm btn-primary" onclick="openNewTaskModal()"><i class="fas fa-plus"></i> Add Task</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table" id="dashboard-tasks-table"></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- My Tasks View -->
+                <div id="my-tasks-view" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">My Tasks</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="nav-tabs">
+                                <div class="nav-tab active" onclick="filterTasks(this, 'all')">All Tasks</div>
+                                <div class="nav-tab" onclick="filterTasks(this, 'todo')">To Do</div>
+                                <div class="nav-tab" onclick="filterTasks(this, 'inprogress')">In Progress</div>
+                                <div class="nav-tab" onclick="filterTasks(this, 'completed')">Completed</div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Task</th>
+                                            <th>Project</th>
+                                            <th>Due Date</th>
+                                            <th>Priority</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="my-tasks-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Projects View -->
+                <div id="projects-view" style="display: none;">
+                    <div class="card">
+                         <div class="card-header">
+                            <h3 class="card-title">All Projects</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="projects-grid" id="projects-grid-container">
+                                <!-- Project cards will be rendered here by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports/Settings Placeholders -->
+                <div id="reports-view" style="display: none;">
+                    <div class="card">
+                        <div class="card-body" style="text-align: center; padding: 4rem;">
+                            <i class="fas fa-chart-pie fa-3x" style="color: var(--gray);"></i>
+                            <h3 style="margin-top: 1rem;">Reports Dashboard Coming Soon</h3>
+                        </div>
+                    </div>
+                </div>
+                <div id="settings-view" style="display: none;">
+                     <div class="card">
+                        <div class="card-body" style="text-align: center; padding: 4rem;">
+                            <i class="fas fa-cog fa-3x" style="color: var(--gray);"></i>
+                            <h3 style="margin-top: 1rem;">Settings Page Coming Soon</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- New Task / Edit Task Modal -->
+    <div class="modal" id="task-modal">
+        <div class="modal-dialog">
+            <form id="task-form">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="task-modal-title">New Task</h4>
+                    <button type="button" class="modal-close" onclick="closeTaskModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="task-id">
+                    <div class="form-group">
+                        <label for="task-title" class="form-label">Task Title</label>
+                        <input type="text" id="task-title" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="task-project" class="form-label">Project</label>
+                        <select id="task-project" class="form-control form-select" required></select>
+                    </div>
+                     <div class="form-group">
+                        <label for="task-due-date" class="form-label">Due Date</label>
+                        <input type="date" id="task-due-date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="task-priority" class="form-label">Priority</label>
+                        <select id="task-priority" class="form-control form-select" required>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                     <div class="form-group">
+                        <label for="task-description" class="form-label">Description</label>
+                        <textarea id="task-description" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" onclick="closeTaskModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- View Task Details Modal -->
+    <div class="modal" id="view-task-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Task Details</h4>
+                    <button class="modal-close" onclick="closeViewTaskModal()">×</button>
+                </div>
+                <div class="modal-body" id="view-task-body"></div>
+                <div class="modal-footer" id="view-task-footer"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // --- SAMPLE DATA ---
+        let projects = [
+            { id: 1, name: "Website Redesign", progress: 75, status: "In Progress", team: ['PM', 'JD', 'SW'] },
+            { id: 2, name: "Mobile App Launch", progress: 40, status: "In Progress", team: ['PM', 'MJ', 'ED'] },
+            { id: 3, name: "Q3 Marketing Campaign", progress: 95, status: "Near Completion", team: ['PM', 'SW', 'RB'] },
+            { id: 4, name: "API Integration", progress: 10, status: "Started", team: ['JD', 'MJ'] },
+            { id: 5, name: "Data Migration", progress: 100, status: "Completed", team: ['ED', 'RB'] }
+        ];
+
+        let tasks = [
+            { id: 1, projectId: 1, title: "Design new homepage mockup", dueDate: "2024-08-15", priority: "high", status: "inprogress", assignee: "Pat Manager" },
+            { id: 2, projectId: 1, title: "Develop homepage frontend", dueDate: "2024-08-25", priority: "high", status: "todo", assignee: "Pat Manager" },
+            { id: 3, projectId: 2, title: "Finalize splash screen assets", dueDate: "2024-08-10", priority: "medium", status: "completed", assignee: "Pat Manager" },
+            { id: 4, projectId: 3, title: "Draft social media posts", dueDate: "2024-08-05", priority: "low", status: "completed", assignee: "Pat Manager" },
+            { id: 5, projectId: 2, title: "Set up push notifications", dueDate: "2024-09-01", priority: "high", status: "todo", assignee: "Pat Manager" },
+            { id: 6, projectId: 4, title: "Review API documentation", dueDate: "2024-08-12", priority: "medium", status: "inprogress", assignee: "Pat Manager" },
+            { id: 7, projectId: 3, title: "Approve final ad copy", dueDate: "2024-08-01", priority: "high", status: "completed", assignee: "Pat Manager" }
+        ];
+
+        // --- DOM ELEMENTS ---
+        const allViews = document.querySelectorAll('.content-wrapper > div');
+        const menuItems = document.querySelectorAll('.menu-item');
+        const pageTitle = document.getElementById('page-title');
+        const taskModal = document.getElementById('task-modal');
+        const viewTaskModal = document.getElementById('view-task-modal');
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            showDashboard();
+            document.getElementById('task-form').addEventListener('submit', handleTaskFormSubmit);
+        });
+
+        // --- NAVIGATION & VIEW MANAGEMENT ---
+        function switchView(viewId, title, menuIndex) {
+            allViews.forEach(view => view.style.display = 'none');
+            document.getElementById(viewId).style.display = 'block';
+            pageTitle.textContent = title;
+            menuItems.forEach((item, index) => item.classList.toggle('active', index === menuIndex));
+        }
+
+        function showDashboard() {
+            switchView('dashboard-view', 'Dashboard', 0);
+            renderDashboard();
+        }
+        function showMyTasks() {
+            switchView('my-tasks-view', 'My Tasks', 1);
+            filterTasks(document.querySelector('#my-tasks-view .nav-tab'), 'all');
+        }
+        function showProjects() {
+            switchView('projects-view', 'Projects', 2);
+            renderProjects();
+        }
+        function showReports() { switchView('reports-view', 'Reports', 4); }
+        function showSettings() { switchView('settings-view', 'Settings', 5); }
+        
+        // --- RENDERING FUNCTIONS ---
+        function renderDashboard() {
+            // Stats
+            document.getElementById('stat-active-projects').textContent = projects.filter(p => p.status !== 'Completed').length;
+            const today = new Date().toISOString().slice(0, 10);
+            document.getElementById('stat-due-today').textContent = tasks.filter(t => t.dueDate === today && t.status !== 'completed').length;
+            document.getElementById('stat-overdue').textContent = tasks.filter(t => t.dueDate < today && t.status !== 'completed').length;
+            document.getElementById('stat-completed').textContent = tasks.filter(t => t.status === 'completed').length; // Simplified
+
+            // High-priority tasks table
+            const highPriorityTasks = tasks.filter(t => t.priority === 'high' && t.status !== 'completed').slice(0, 5);
+            const table = document.getElementById('dashboard-tasks-table');
+            let html = `<thead><tr><th>Task</th><th>Project</th><th>Due Date</th><th>Status</th></tr></thead><tbody>`;
+            if (highPriorityTasks.length > 0) {
+                highPriorityTasks.forEach(task => {
+                    const project = projects.find(p => p.id === task.projectId);
+                    html += `<tr>
+                        <td>${task.title}</td>
+                        <td>${project ? project.name : 'N/A'}</td>
+                        <td>${formatDate(task.dueDate)}</td>
+                        <td><span class="badge ${getStatusBadgeClass(task.status)}">${capitalize(task.status)}</span></td>
+                    </tr>`;
+                });
+            } else {
+                html += `<tr><td colspan="4" style="text-align:center; color: var(--gray);">No high-priority tasks. Great job!</td></tr>`;
+            }
+            table.innerHTML = html + `</tbody>`;
+        }
+
+        function renderTasks(filteredTasks) {
+            const tbody = document.getElementById('my-tasks-body');
+            tbody.innerHTML = '';
+            if (filteredTasks.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--gray);">No tasks found.</td></tr>`;
+                return;
+            }
+            filteredTasks.forEach(task => {
+                const project = projects.find(p => p.id === task.projectId);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${task.title}</td>
+                    <td>${project ? project.name : 'N/A'}</td>
+                    <td>${formatDate(task.dueDate)}</td>
+                    <td><span class="badge ${getPriorityBadgeClass(task.priority)}">${capitalize(task.priority)}</span></td>
+                    <td><span class="badge ${getStatusBadgeClass(task.status)}">${capitalize(task.status)}</span></td>
+                    <td><button class="btn btn-sm btn-light" onclick="openViewTaskModal(${task.id})"><i class="fas fa-eye"></i></button></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function renderProjects() {
+            const container = document.getElementById('projects-grid-container');
+            container.innerHTML = '';
+            projects.forEach(project => {
+                const card = document.createElement('div');
+                card.className = 'project-card';
+                let avatarsHtml = '';
+                project.team.forEach(member => {
+                    avatarsHtml += `<div class="avatar">${member}</div>`;
+                });
+                card.innerHTML = `
+                    <div class="project-card-header">
+                        <h4 class="project-card-title">${project.name}</h4>
+                        <span class="project-card-status badge ${getStatusBadgeClass(project.status.toLowerCase().replace(' ', ''))}">${project.status}</span>
+                    </div>
+                    <div>
+                        <small>${project.progress}% Complete</small>
+                        <div class="progress-bar">
+                            <div class="progress-bar-fill" style="width: ${project.progress}%;"></div>
+                        </div>
+                    </div>
+                    <div class="project-card-footer">
+                        <div class="team-avatars">${avatarsHtml}</div>
+                        <button class="btn btn-sm btn-light" onclick="showMyTasks(); filterTasks(null, 'all', ${project.id})">View Tasks</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // --- FILTERING ---
+        function filterTasks(tabElement, status, projectId = null) {
+            if (tabElement) {
+                document.querySelectorAll('#my-tasks-view .nav-tab').forEach(tab => tab.classList.remove('active'));
+                tabElement.classList.add('active');
+            }
+            
+            let filtered = tasks;
+            if (status !== 'all') {
+                filtered = tasks.filter(t => t.status === status);
+            }
+            if (projectId) {
+                filtered = filtered.filter(t => t.projectId === projectId);
+            }
+            renderTasks(filtered);
+        }
+
+        // --- MODAL & FORM LOGIC ---
+        function openNewTaskModal() {
+            document.getElementById('task-form').reset();
+            document.getElementById('task-modal-title').textContent = "New Task";
+            document.getElementById('task-id').value = '';
+            const projectSelect = document.getElementById('task-project');
+            projectSelect.innerHTML = '';
+            projects.forEach(p => {
+                projectSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`;
+            });
+            taskModal.classList.add('show');
+        }
+
+        function closeTaskModal() {
+            taskModal.classList.remove('show');
+        }
+
+        function handleTaskFormSubmit(e) {
+            e.preventDefault();
+            const newTask = {
+                id: tasks.length + 1, // Simplified ID generation
+                title: document.getElementById('task-title').value,
+                projectId: parseInt(document.getElementById('task-project').value),
+                dueDate: document.getElementById('task-due-date').value,
+                priority: document.getElementById('task-priority').value,
+                status: 'todo', // New tasks always start as 'todo'
+                assignee: 'Pat Manager'
+            };
+            tasks.push(newTask);
+            alert('Task created successfully!');
+            closeTaskModal();
+            showMyTasks();
+        }
+
+        function openViewTaskModal(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            const project = projects.find(p => p.id === task.projectId);
+            const body = document.getElementById('view-task-body');
+            body.innerHTML = `
+                <h4>${task.title}</h4>
+                <p><strong>Project:</strong> ${project.name}</p>
+                <p><strong>Due Date:</strong> ${formatDate(task.dueDate)}</p>
+                <p><strong>Priority:</strong> <span class="badge ${getPriorityBadgeClass(task.priority)}">${capitalize(task.priority)}</span></p>
+                <p><strong>Status:</strong> <span class="badge ${getStatusBadgeClass(task.status)}">${capitalize(task.status)}</span></p>
+                ${task.description ? `<hr><p>${task.description}</p>` : ''}
+            `;
+            
+            const footer = document.getElementById('view-task-footer');
+            let footerHtml = `<button type="button" class="btn btn-light" onclick="closeViewTaskModal()">Close</button>`;
+            if (task.status !== 'completed') {
+                footerHtml += `<button class="btn btn-primary" onclick="updateTaskStatus(${taskId}, 'completed')"><i class="fas fa-check"></i> Mark as Complete</button>`;
+            }
+            footer.innerHTML = footerHtml;
+            
+            viewTaskModal.classList.add('show');
+        }
+        
+        function closeViewTaskModal() {
+            viewTaskModal.classList.remove('show');
+        }
+
+        function updateTaskStatus(taskId, newStatus) {
+            const task = tasks.find(t => t.id === taskId);
+            if(task) {
+                task.status = newStatus;
+                closeViewTaskModal();
+                // Refresh the current view
+                const activeTab = document.querySelector('#my-tasks-view .nav-tab.active');
+                if (activeTab) {
+                    activeTab.click();
+                } else {
+                    renderTasks(tasks);
+                }
+            }
+        }
+
+        // --- HELPER FUNCTIONS ---
+        function getStatusBadgeClass(status) {
+            const map = { todo: 'badge-primary', inprogress: 'badge-warning', completed: 'badge-success', nearcompletion: 'badge-info', started: 'badge-primary' };
+            return map[status] || 'badge-light';
+        }
+        function getPriorityBadgeClass(priority) {
+            const map = { low: 'badge-success', medium: 'badge-warning', high: 'badge-danger' };
+            return map[priority] || 'badge-light';
+        }
+        function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            return new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+    </script>
+</body>
+</html>
