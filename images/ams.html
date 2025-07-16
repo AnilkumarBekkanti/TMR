@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AttendWise | Attendance Management System</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #006400; /* Dark Green */
+            --primary-light: #2E8B57; /* Sea Green */
+            --secondary: #2F4F4F; /* Dark Slate Gray */
+            --success: #32CD32; /* Lime Green (Present) */
+            --danger: #DC143C; /* Crimson (Absent) */
+            --warning: #FFBF00; /* Amber (Late) */
+            --info: #87CEEB; /* Sky Blue (Leave/Half-day) */
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --white: #ffffff;
+            --sidebar-width: 280px;
+            --header-height: 70px;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: #f5f7fb; color: var(--dark); overflow-x: hidden; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 10px; }
+        .app-container { display: flex; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-width); background: linear-gradient(135deg, var(--primary), var(--secondary)); color: var(--white); height: 100vh; position: fixed; z-index: 100; box-shadow: var(--shadow); }
+        .sidebar-header { padding: 1.5rem; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .sidebar-header .logo-icon { font-size: 1.8rem; }
+        .sidebar-menu { padding: 1rem 0; height: calc(100vh - var(--header-height)); overflow-y: auto; }
+        .menu-item { padding: 0.8rem 1.5rem; margin: 0.2rem 0; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: var(--transition); position: relative; color: rgba(255, 255, 255, 0.85); }
+        .menu-item:hover, .menu-item.active { background: rgba(255, 255, 255, 0.1); color: var(--white); }
+        .menu-item.active::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background: var(--white); border-radius: 0 4px 4px 0; }
+        .menu-item i { font-size: 1.1rem; width: 24px; text-align: center; }
+        .main-content { flex: 1; margin-left: var(--sidebar-width); }
+        .header { height: var(--header-height); background: var(--white); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 90; }
+        .header-left h1 { font-size: 1.5rem; font-weight: 600; }
+        .header-right { display: flex; align-items: center; gap: 1.5rem; }
+        .user-profile { display: flex; align-items: center; gap: 10px; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: 600; }
+        .user-name { font-weight: 500; }
+        .user-role { font-size: 0.8rem; color: var(--gray); }
+        .content-wrapper { padding: 2rem; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--white); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow); border-left: 4px solid; }
+        .stat-card.present { border-color: var(--success); }
+        .stat-card.absent { border-color: var(--danger); }
+        .stat-card.late { border-color: var(--warning); }
+        .stat-card.leave { border-color: var(--info); }
+        .stat-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+        .stat-icon { font-size: 1.8rem; }
+        .stat-card.present .stat-icon { color: var(--success); }
+        .stat-card.absent .stat-icon { color: var(--danger); }
+        .stat-card.late .stat-icon { color: var(--warning); }
+        .stat-card.leave .stat-icon { color: var(--info); }
+        .stat-value { font-size: 2rem; font-weight: 700; }
+        .stat-label { color: var(--gray); font-size: 0.9rem; }
+        .card { background: var(--white); border-radius: 12px; box-shadow: var(--shadow); margin-bottom: 2rem; overflow: hidden; }
+        .card-header { padding: 1.2rem 1.5rem; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: space-between; }
+        .card-title { font-weight: 600; font-size: 1.2rem; }
+        .card-actions { display: flex; gap: 0.5rem; }
+        .card-body { padding: 1.5rem; }
+        .table-responsive { overflow-x: auto; }
+        .table { width: 100%; border-collapse: collapse; }
+        .table th, .table td { padding: 1rem 1.2rem; text-align: left; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+        .table th { font-weight: 600; color: var(--gray); background: #fafafa; text-transform: uppercase; font-size: 0.8rem; }
+        .table tbody tr:hover { background: #fdfdfd; }
+        .badge { display: inline-block; padding: 0.35rem 0.65rem; font-size: 0.75rem; font-weight: 600; border-radius: 50px; }
+        .badge-present { background: rgba(50, 205, 50, 0.1); color: #228B22; }
+        .badge-absent { background: rgba(220, 20, 60, 0.1); color: var(--danger); }
+        .badge-late { background: rgba(255, 191, 0, 0.15); color: #D2691E; }
+        .badge-halfday, .badge-onleave { background: rgba(135, 206, 235, 0.2); color: #008B8B; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 500; font-size: 0.9rem; cursor: pointer; transition: var(--transition); border: none; gap: 0.5rem; }
+        .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+        .btn-primary { background: var(--primary); color: var(--white); }
+        .btn-primary:hover { background: #004d00; }
+        .btn-light { background: var(--light); color: var(--dark); border: 1px solid #dee2e6; }
+        .btn-light:hover { background: #e2e6ea; }
+        .form-group { margin-bottom: 1.2rem; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.9rem; }
+        .form-control { width: 100%; padding: 0.8rem 1rem; border: 1px solid #ced4da; border-radius: 8px; font-size: 0.9rem; }
+        .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0, 100, 0, 0.2); }
+        .form-select { appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right .75rem center; background-size: 16px 12px; padding-right: 2.5rem; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; visibility: hidden; transition: var(--transition); }
+        .modal.show { opacity: 1; visibility: visible; }
+        .modal-dialog { width: 90%; max-width: 500px; background: var(--white); border-radius: 12px; transform: translateY(-50px); transition: var(--transition); }
+        .modal.show .modal-dialog { transform: translateY(0); }
+        .modal-header, .modal-body, .modal-footer { padding: 1.2rem 1.5rem; }
+        .modal-header { border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
+        .modal-title { font-weight: 600; font-size: 1.2rem; }
+        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray); }
+        .modal-footer { border-top: 1px solid #f0f0f0; display: flex; justify-content: flex-end; gap: 0.5rem; }
+        .filter-bar { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        
+        /* Calendar Styles for My Attendance */
+        .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+        .calendar-header { text-align: center; font-weight: 600; color: var(--gray); padding-bottom: 10px; font-size: 0.9rem; }
+        .calendar-day { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; border-radius: 8px; background-color: #f1f1f1; color: var(--gray); position: relative; }
+        .calendar-day.not-current-month { opacity: 0.5; }
+        .calendar-day.has-data { color: var(--dark); background-color: #e9ecef; font-weight: 500; }
+        .calendar-day-status { position: absolute; bottom: 5px; left: 5px; right: 5px; height: 4px; border-radius: 2px; }
+        .calendar-day .present { background-color: var(--success); }
+        .calendar-day .absent { background-color: var(--danger); }
+        .calendar-day .late { background-color: var(--warning); }
+        .calendar-day .halfday, .calendar-day .onleave { background-color: var(--info); }
+        .calendar-day.today .day-number { background-color: var(--primary); color: var(--white); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
+
+        @media (max-width: 992px) { .sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; } }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-clipboard-user logo-icon"></i>
+                <h2>AttendWise</h2>
+            </div>
+            <nav class="sidebar-menu">
+                <div class="menu-item active" onclick="showDashboard()">
+                    <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
+                </div>
+                <div class="menu-item" onclick="showTodaysAttendance()">
+                    <i class="fas fa-calendar-day"></i><span>Today's Attendance</span>
+                </div>
+                 <div class="menu-item" onclick="showMyAttendance()">
+                    <i class="fas fa-user-clock"></i><span>My Attendance</span>
+                </div>
+                <div class="menu-item" onclick="showAttendanceLog()">
+                    <i class="fas fa-history"></i><span>Attendance Log</span>
+                </div>
+                <div class="menu-item" onclick="showReports()">
+                    <i class="fas fa-chart-bar"></i><span>Reports</span>
+                </div>
+                <div class="menu-item" onclick="showSettings()">
+                    <i class="fas fa-cog"></i><span>Settings</span>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1 id="page-title">Dashboard</h1>
+                </div>
+                <div class="header-right">
+                    <div class="user-profile">
+                        <div class="user-avatar">HR</div>
+                        <div>
+                            <div class="user-name">Holly Rite</div>
+                            <div class="user-role">HR Manager</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Wrapper -->
+            <div class="content-wrapper">
+                <!-- Dashboard View -->
+                <div id="dashboard-view">
+                    <div class="stats-grid">
+                        <div class="stat-card present">
+                            <div class="stat-header"><i class="stat-icon fas fa-user-check"></i><div class="stat-value" id="stat-present">0</div></div>
+                            <div class="stat-label">Present Today</div>
+                        </div>
+                        <div class="stat-card absent">
+                            <div class="stat-header"><i class="stat-icon fas fa-user-times"></i><div class="stat-value" id="stat-absent">0</div></div>
+                            <div class="stat-label">Absent Today</div>
+                        </div>
+                        <div class="stat-card late">
+                            <div class="stat-header"><i class="stat-icon fas fa-user-clock"></i><div class="stat-value" id="stat-late">0</div></div>
+                            <div class="stat-label">Late Arrivals</div>
+                        </div>
+                        <div class="stat-card leave">
+                            <div class="stat-header"><i class="stat-icon fas fa-user-tag"></i><div class="stat-value" id="stat-leave">0</div></div>
+                            <div class="stat-label">On Leave</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h3 class="card-title">Recent Irregularities</h3></div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table" id="dashboard-irregularities-table"></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Today's Attendance View -->
+                <div id="todays-attendance-view" style="display: none;">
+                    <div class="card">
+                        <div class="card-header"><h3 class="card-title" id="todays-date-title">Today's Attendance</h3></div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead><tr><th>Employee</th><th>Status</th><th>Check-in</th><th>Check-out</th><th>Work Duration</th><th>Actions</th></tr></thead>
+                                    <tbody id="todays-attendance-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                 <!-- My Attendance View -->
+                <div id="my-attendance-view" style="display: none;">
+                    <div class="card">
+                        <div class="card-header"><h3 class="card-title">My Attendance - August 2024</h3></div>
+                        <div class="card-body">
+                            <div class="calendar" id="my-attendance-calendar">
+                                <!-- Calendar grid will be rendered here by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attendance Log View -->
+                <div id="attendance-log-view" style="display: none;">
+                    <div class="card">
+                        <div class="card-header"><h3 class="card-title">Attendance Log</h3></div>
+                        <div class="card-body">
+                            <div class="filter-bar">
+                                <div class="form-group"><label for="log-date" class="form-label">Date</label><input type="date" id="log-date" class="form-control"></div>
+                                <div class="form-group"><label for="log-employee" class="form-label">Employee</label><select id="log-employee" class="form-control form-select"><option value="all">All Employees</option></select></div>
+                                <div class="form-group"><label for="log-status" class="form-label">Status</label><select id="log-status" class="form-control form-select"><option value="all">All Statuses</option><option value="Present">Present</option><option value="Absent">Absent</option><option value="Late">Late</option><option value="On Leave">On Leave</option></select></div>
+                                <div class="form-group" style="margin-top:auto;"><button class="btn btn-primary" onclick="applyLogFilters()">Filter</button></div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead><tr><th>Date</th><th>Employee</th><th>Status</th><th>Check-in</th><th>Check-out</th><th>Notes</th></tr></thead>
+                                    <tbody id="attendance-log-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Placeholders for Reports/Settings -->
+                <div id="reports-view" style="display: none;"><div class="card"><div class="card-body" style="text-align: center; padding: 4rem;"><i class="fas fa-chart-bar fa-3x" style="color: var(--gray);"></i><h3 style="margin-top: 1rem;">Analytics & Reports Coming Soon</h3></div></div></div>
+                <div id="settings-view" style="display: none;"><div class="card"><div class="card-body" style="text-align: center; padding: 4rem;"><i class="fas fa-cog fa-3x" style="color: var(--gray);"></i><h3 style="margin-top: 1rem;">System Settings Coming Soon</h3></div></div></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Attendance Modal -->
+    <div class="modal" id="edit-attendance-modal">
+        <div class="modal-dialog">
+            <form id="edit-attendance-form">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="edit-modal-title">Edit Attendance</h4>
+                    <button type="button" class="modal-close" onclick="closeEditModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="edit-record-id">
+                    <div class="form-group"><label for="edit-status" class="form-label">Status</label><select id="edit-status" class="form-control form-select" required><option value="Present">Present</option><option value="Absent">Absent</option><option value="Late">Late</option><option value="Half Day">Half Day</option><option value="On Leave">On Leave</option></select></div>
+                    <div class="form-group"><label for="edit-checkin" class="form-label">Check-in Time</label><input type="time" id="edit-checkin" class="form-control"></div>
+                    <div class="form-group"><label for="edit-checkout" class="form-label">Check-out Time</label><input type="time" id="edit-checkout" class="form-control"></div>
+                    <div class="form-group"><label for="edit-notes" class="form-label">Notes (Optional)</label><textarea id="edit-notes" class="form-control" rows="3"></textarea></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- SAMPLE DATA ---
+        const employees = [
+            { id: 1, name: "Alice Johnson", initials: "AJ" }, { id: 2, name: "Bob Williams", initials: "BW" },
+            { id: 3, name: "Charlie Brown", initials: "CB" }, { id: 4, name: "Diana Prince", initials: "DP" },
+            { id: 5, name: "Ethan Hunt", initials: "EH" }
+        ];
+
+        let attendanceRecords = [
+            { recordId: 1, employeeId: 1, date: "2024-08-21", status: "Present", checkIn: "08:55", checkOut: "17:05", notes: "" },
+            { recordId: 2, employeeId: 2, date: "2024-08-21", status: "Late", checkIn: "09:15", checkOut: "17:30", notes: "Stuck in traffic." },
+            { recordId: 3, employeeId: 3, date: "2024-08-21", status: "Absent", checkIn: null, checkOut: null, notes: "Sick leave" },
+            { recordId: 4, employeeId: 4, date: "2024-08-21", status: "On Leave", checkIn: null, checkOut: null, notes: "Annual leave" },
+            { recordId: 5, employeeId: 5, date: "2024-08-21", status: "Present", checkIn: "09:00", checkOut: "17:00", notes: "" },
+            { recordId: 6, employeeId: 1, date: "2024-08-20", status: "Present", checkIn: "09:00", checkOut: "17:00", notes: "" },
+            { recordId: 7, employeeId: 2, date: "2024-08-20", status: "Present", checkIn: "08:58", checkOut: "17:02", notes: "" },
+            { recordId: 8, employeeId: 3, date: "2024-08-20", status: "Present", checkIn: "09:05", checkOut: "17:00", notes: "" }
+        ];
+        
+        const todayStr = "2024-08-21"; // Hardcoding today's date for consistent demo
+
+        // --- DOM ELEMENTS ---
+        const allViews = document.querySelectorAll('.content-wrapper > div');
+        const menuItems = document.querySelectorAll('.menu-item');
+        const pageTitle = document.getElementById('page-title');
+        const editModal = document.getElementById('edit-attendance-modal');
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            showDashboard();
+            document.getElementById('edit-attendance-form').addEventListener('submit', handleFormSubmit);
+            populateEmployeeFilters();
+        });
+
+        // --- NAVIGATION & VIEW MANAGEMENT ---
+        function switchView(viewId, title, menuIndex) {
+            allViews.forEach(view => view.style.display = 'none');
+            document.getElementById(viewId).style.display = 'block';
+            pageTitle.textContent = title;
+            menuItems.forEach((item, index) => item.classList.toggle('active', index === menuIndex));
+        }
+
+        function showDashboard() {
+            switchView('dashboard-view', 'Dashboard', 0);
+            renderDashboard();
+        }
+        function showTodaysAttendance() {
+            switchView('todays-attendance-view', "Today's Attendance", 1);
+            renderTodaysAttendance();
+        }
+        function showMyAttendance() {
+            switchView('my-attendance-view', 'My Attendance', 2);
+            renderMyAttendanceCalendar(3); // Demo for Charlie Brown
+        }
+        function showAttendanceLog() {
+            switchView('attendance-log-view', 'Attendance Log', 3);
+            applyLogFilters();
+        }
+        function showReports() { switchView('reports-view', 'Reports', 4); }
+        function showSettings() { switchView('settings-view', 'Settings', 5); }
+
+        // --- RENDERING FUNCTIONS ---
+        function renderDashboard() {
+            const todaysRecords = attendanceRecords.filter(r => r.date === todayStr);
+            document.getElementById('stat-present').textContent = todaysRecords.filter(r => r.status === 'Present').length;
+            document.getElementById('stat-absent').textContent = todaysRecords.filter(r => r.status === 'Absent').length;
+            document.getElementById('stat-late').textContent = todaysRecords.filter(r => r.status === 'Late').length;
+            document.getElementById('stat-leave').textContent = todaysRecords.filter(r => r.status === 'On Leave' || r.status === 'Half Day').length;
+            
+            const irregularities = todaysRecords.filter(r => r.status !== 'Present' && r.status !== 'On Leave');
+            const table = document.getElementById('dashboard-irregularities-table');
+            let html = `<thead><tr><th>Employee</th><th>Status</th><th>Notes</th></tr></thead><tbody>`;
+            if (irregularities.length > 0) {
+                irregularities.forEach(r => {
+                    const emp = getEmployeeById(r.employeeId);
+                    html += `<tr><td>${emp.name}</td><td><span class="badge ${getStatusBadgeClass(r.status)}">${r.status}</span></td><td>${r.notes}</td></tr>`;
+                });
+            } else {
+                html += `<tr><td colspan="3" style="text-align:center; color: var(--gray);">No irregularities today.</td></tr>`;
+            }
+            table.innerHTML = html + `</tbody>`;
+        }
+
+        function renderTodaysAttendance() {
+            const tbody = document.getElementById('todays-attendance-body');
+            tbody.innerHTML = '';
+            document.getElementById('todays-date-title').textContent = `Today's Attendance (${formatDate(todayStr)})`;
+            const todaysRecords = attendanceRecords.filter(r => r.date === todayStr);
+            todaysRecords.forEach(r => {
+                const emp = getEmployeeById(r.employeeId);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div class="user-avatar" style="width:35px; height:35px; font-size:0.9rem;">${emp.initials}</div>
+                            <span>${emp.name}</span>
+                        </div>
+                    </td>
+                    <td><span class="badge ${getStatusBadgeClass(r.status)}">${r.status}</span></td>
+                    <td>${formatTime(r.checkIn)}</td>
+                    <td>${formatTime(r.checkOut)}</td>
+                    <td>${calculateWorkDuration(r.checkIn, r.checkOut)}</td>
+                    <td><button class="btn btn-sm btn-light" onclick="openEditModal(${r.recordId})"><i class="fas fa-edit"></i> Edit</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function renderMyAttendanceCalendar(employeeId) {
+            const calendarEl = document.getElementById('my-attendance-calendar');
+            calendarEl.innerHTML = ''; // Clear previous
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            days.forEach(day => {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'calendar-header';
+                dayEl.textContent = day;
+                calendarEl.appendChild(dayEl);
+            });
+            
+            // For demo, assume August 2024 which starts on a Thursday
+            for (let i = 0; i < 4; i++) { // Empty cells for Sun-Wed
+                 calendarEl.innerHTML += `<div class="calendar-day not-current-month"></div>`;
+            }
+            for (let day = 1; day <= 31; day++) {
+                 const dayEl = document.createElement('div');
+                 dayEl.className = 'calendar-day has-data';
+                 const dateStr = `2024-08-${String(day).padStart(2, '0')}`;
+                 const record = attendanceRecords.find(r => r.employeeId === employeeId && r.date === dateStr);
+                 
+                 dayEl.innerHTML = `<span class="day-number">${day}</span>`;
+                 if (record) {
+                     dayEl.innerHTML += `<div class="calendar-day-status ${record.status.toLowerCase().replace(' ', '')}"></div>`;
+                 }
+                 if(dateStr === todayStr) dayEl.classList.add('today');
+                 calendarEl.appendChild(dayEl);
+            }
+        }
+
+        // --- FILTER & LOGIC ---
+        function applyLogFilters() {
+            const date = document.getElementById('log-date').value;
+            const empId = document.getElementById('log-employee').value;
+            const status = document.getElementById('log-status').value;
+            let filtered = attendanceRecords;
+            if (date) filtered = filtered.filter(r => r.date === date);
+            if (empId !== 'all') filtered = filtered.filter(r => r.employeeId == empId);
+            if (status !== 'all') filtered = filtered.filter(r => r.status === status);
+
+            const tbody = document.getElementById('attendance-log-body');
+            tbody.innerHTML = '';
+            filtered.forEach(r => {
+                const emp = getEmployeeById(r.employeeId);
+                tbody.innerHTML += `<tr><td>${formatDate(r.date)}</td><td>${emp.name}</td><td><span class="badge ${getStatusBadgeClass(r.status)}">${r.status}</span></td><td>${formatTime(r.checkIn)}</td><td>${formatTime(r.checkOut)}</td><td>${r.notes}</td></tr>`;
+            });
+        }
+
+        // --- MODAL & FORM LOGIC ---
+        function openEditModal(recordId) {
+            const record = attendanceRecords.find(r => r.recordId === recordId);
+            const emp = getEmployeeById(record.employeeId);
+            document.getElementById('edit-modal-title').textContent = `Edit Attendance for ${emp.name}`;
+            document.getElementById('edit-record-id').value = record.recordId;
+            document.getElementById('edit-status').value = record.status;
+            document.getElementById('edit-checkin').value = record.checkIn;
+            document.getElementById('edit-checkout').value = record.checkOut;
+            document.getElementById('edit-notes').value = record.notes;
+            editModal.classList.add('show');
+        }
+
+        function closeEditModal() { editModal.classList.remove('show'); }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const recordId = document.getElementById('edit-record-id').value;
+            const record = attendanceRecords.find(r => r.recordId == recordId);
+            if (record) {
+                record.status = document.getElementById('edit-status').value;
+                record.checkIn = document.getElementById('edit-checkin').value || null;
+                record.checkOut = document.getElementById('edit-checkout').value || null;
+                record.notes = document.getElementById('edit-notes').value;
+            }
+            closeEditModal();
+            renderTodaysAttendance(); // Refresh the view
+            renderDashboard(); // Also refresh dashboard stats
+        }
+        
+        // --- HELPER FUNCTIONS ---
+        function getEmployeeById(id) { return employees.find(e => e.id === id) || { name: 'Unknown', initials: '?' }; }
+        function populateEmployeeFilters() {
+            const select = document.getElementById('log-employee');
+            employees.forEach(e => select.innerHTML += `<option value="${e.id}">${e.name}</option>`);
+        }
+        function getStatusBadgeClass(status) {
+            return `badge-${status.toLowerCase().replace(' ', '')}`;
+        }
+        function formatDate(dateStr) {
+            if (!dateStr) return 'N/A';
+            return new Date(dateStr).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+        function formatTime(timeStr) {
+            if (!timeStr) return 'N/A';
+            const [h, m] = timeStr.split(':');
+            const H = parseInt(h);
+            const ampm = H >= 12 ? 'PM' : 'AM';
+            const hour12 = H % 12 || 12;
+            return `${String(hour12).padStart(2, '0')}:${m} ${ampm}`;
+        }
+        function calculateWorkDuration(start, end) {
+            if (!start || !end) return 'N/A';
+            const startTime = new Date(`1970-01-01T${start}:00`);
+            const endTime = new Date(`1970-01-01T${end}:00`);
+            let diff = (endTime - startTime) / 1000 / 60; // difference in minutes
+            const hours = Math.floor(diff / 60);
+            const minutes = Math.round(diff % 60);
+            return `${hours}h ${minutes}m`;
+        }
+    </script>
+</body>
+</html>

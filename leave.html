@@ -4,13 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LeaveEase | Leave Management System</title>
-    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Poppins -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
     <style>
         :root {
             --primary: #4361ee;
@@ -41,6 +35,11 @@
             background-color: #f5f7fb;
             color: var(--dark);
             overflow-x: hidden;
+        }
+
+        @font-face {
+            font-family: 'Poppins';
+            src: url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         }
 
         /* Scrollbar styling */
@@ -286,11 +285,25 @@
             height: 100%;
         }
 
-        .stat-card.primary::before { background: var(--primary); }
-        .stat-card.success::before { background: var(--success); }
-        .stat-card.warning::before { background: var(--warning); }
-        .stat-card.danger::before { background: var(--danger); }
-        .stat-card.info::before { background: var(--info); }
+        .stat-card.primary::before {
+            background: var(--primary);
+        }
+
+        .stat-card.success::before {
+            background: var(--success);
+        }
+
+        .stat-card.warning::before {
+            background: var(--warning);
+        }
+
+        .stat-card.danger::before {
+            background: var(--danger);
+        }
+
+        .stat-card.info::before {
+            background: var(--info);
+        }
 
         .stat-icon {
             width: 50px;
@@ -303,11 +316,30 @@
             margin-bottom: 1rem;
         }
 
-        .stat-card.primary .stat-icon { background: rgba(67, 97, 238, 0.1); color: var(--primary); }
-        .stat-card.success .stat-icon { background: rgba(76, 201, 240, 0.1); color: var(--success); }
-        .stat-card.warning .stat-icon { background: rgba(248, 150, 30, 0.1); color: var(--warning); }
-        .stat-card.danger .stat-icon { background: rgba(247, 37, 133, 0.1); color: var(--danger); }
-        .stat-card.info .stat-icon { background: rgba(67, 170, 139, 0.1); color: var(--info); }
+        .stat-card.primary .stat-icon {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+
+        .stat-card.success .stat-icon {
+            background: rgba(76, 201, 240, 0.1);
+            color: var(--success);
+        }
+
+        .stat-card.warning .stat-icon {
+            background: rgba(248, 150, 30, 0.1);
+            color: var(--warning);
+        }
+
+        .stat-card.danger .stat-icon {
+            background: rgba(247, 37, 133, 0.1);
+            color: var(--danger);
+        }
+
+        .stat-card.info .stat-icon {
+            background: rgba(67, 170, 139, 0.1);
+            color: var(--info);
+        }
 
         .stat-value {
             font-size: 1.8rem;
@@ -323,13 +355,17 @@
         .stat-change {
             display: flex;
             align-items: center;
-            gap: 5px;
             margin-top: 0.5rem;
             font-size: 0.8rem;
         }
 
-        .stat-change.up { color: #28a745; }
-        .stat-change.down { color: #dc3545; }
+        .stat-change.up {
+            color: #28a745;
+        }
+
+        .stat-change.down {
+            color: #dc3545;
+        }
 
         /* Cards */
         .card {
@@ -376,7 +412,6 @@
             padding: 1rem 1.2rem;
             text-align: left;
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            vertical-align: middle;
         }
 
         .table th {
@@ -388,8 +423,8 @@
             letter-spacing: 0.5px;
         }
 
-        .table tbody tr:hover {
-            background: rgba(0, 0, 0, 0.02);
+        .table tr:hover {
+            background: rgba(0, 0, 0, 0.01);
         }
 
         /* Badges */
@@ -405,12 +440,35 @@
             border-radius: 50px;
         }
 
-        .badge-primary { background: rgba(67, 97, 238, 0.1); color: var(--primary); }
-        .badge-success { background: rgba(76, 201, 240, 0.1); color: var(--success); }
-        .badge-warning { background: rgba(248, 150, 30, 0.1); color: var(--warning); }
-        .badge-danger { background: rgba(247, 37, 133, 0.1); color: var(--danger); }
-        .badge-info { background: rgba(67, 170, 139, 0.1); color: var(--info); }
-        .badge-light { background: rgba(248, 249, 250, 0.1); color: var(--gray); }
+        .badge-primary {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+
+        .badge-success {
+            background: rgba(76, 201, 240, 0.1);
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background: rgba(248, 150, 30, 0.1);
+            color: var(--warning);
+        }
+
+        .badge-danger {
+            background: rgba(247, 37, 133, 0.1);
+            color: var(--danger);
+        }
+
+        .badge-info {
+            background: rgba(67, 170, 139, 0.1);
+            color: var(--info);
+        }
+
+        .badge-light {
+            background: rgba(248, 249, 250, 0.1);
+            color: var(--gray);
+        }
 
         /* Buttons */
         .btn {
@@ -432,18 +490,61 @@
             font-size: 0.8rem;
         }
 
-        .btn-primary { background: var(--primary); color: var(--white); }
-        .btn-primary:hover { background: var(--secondary); }
-        .btn-outline-primary { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
-        .btn-outline-primary:hover { background: var(--primary); color: var(--white); }
-        .btn-success { background: var(--success); color: var(--white); }
-        .btn-success:hover { background: #3aa8d5; }
-        .btn-danger { background: var(--danger); color: var(--white); }
-        .btn-danger:hover { background: #e31273; }
-        .btn-warning { background: var(--warning); color: var(--white); }
-        .btn-warning:hover { background: #e68a19; }
-        .btn-light { background: var(--light); color: var(--dark); border: 1px solid #dee2e6;}
-        .btn-light:hover { background: #e2e6ea; }
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary);
+        }
+
+        .btn-outline-primary {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            background: #3aa8d5;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .btn-danger:hover {
+            background: #e31273;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: var(--white);
+        }
+
+        .btn-warning:hover {
+            background: #e68a19;
+        }
+
+        .btn-light {
+            background: var(--light);
+            color: var(--dark);
+        }
+
+        .btn-light:hover {
+            background: #e2e6ea;
+        }
 
         /* Forms */
         .form-group {
@@ -471,11 +572,6 @@
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
         }
-        
-        .form-control[disabled] {
-            background-color: #e9ecef;
-            opacity: 1;
-        }
 
         textarea.form-control {
             min-height: 120px;
@@ -488,26 +584,6 @@
             background-repeat: no-repeat;
             background-position: right 0.75rem center;
             background-size: 16px 12px;
-            padding-right: 2.5rem;
-        }
-
-        /* Simple Grid for Forms */
-        .row {
-            display: flex;
-            flex-wrap: wrap;
-            margin-right: -15px;
-            margin-left: -15px;
-        }
-        .col-md-4, .col-md-6, .col-md-8 {
-            position: relative;
-            width: 100%;
-            padding-right: 15px;
-            padding-left: 15px;
-        }
-        @media (min-width: 768px) {
-            .col-md-4 { flex: 0 0 33.333333%; max-width: 33.333333%; }
-            .col-md-6 { flex: 0 0 50%; max-width: 50%; }
-            .col-md-8 { flex: 0 0 66.666667%; max-width: 66.666667%; }
         }
 
         /* Modal */
@@ -610,30 +686,23 @@
             color: var(--primary);
             border-bottom-color: var(--primary);
         }
-        
-        /* List Group for Settings page */
-        .list-group-flush .list-group-item {
-            border-width: 0 0 1px;
-            padding: 1rem 0;
-        }
-        .list-group-item {
-            position: relative;
-            display: block;
-            padding: .75rem 1.25rem;
-            background-color: var(--white);
-            border: 1px solid rgba(0,0,0,.125);
-        }
 
         /* Responsive */
         @media (max-width: 992px) {
             .sidebar {
                 transform: translateX(-100%);
             }
+
             .sidebar.show {
                 transform: translateX(0);
             }
+
             .main-content {
                 margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
             }
         }
 
@@ -641,9 +710,11 @@
             .header {
                 padding: 0 1rem;
             }
+
             .content-wrapper {
                 padding: 1.5rem 1rem;
             }
+
             .stats-grid {
                 grid-template-columns: 1fr 1fr;
             }
@@ -653,43 +724,91 @@
             .stats-grid {
                 grid-template-columns: 1fr;
             }
+
             .modal-dialog {
                 width: 95%;
-            }
-            .card-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
             }
         }
 
         /* Utility Classes */
-        .d-flex { display: flex; }
-        .align-items-center { align-items: center; }
-        .justify-content-between { justify-content: space-between; }
-        .justify-content-end { justify-content: flex-end; }
-        .gap-2 { gap: 0.5rem; }
-        .mx-auto { margin-left: auto; margin-right: auto; }
-        .my-4 { margin-top: 1.5rem; margin-bottom: 1.5rem; }
-        .mt-2 { margin-top: 0.5rem; }
-        .mt-3 { margin-top: 1rem; }
-        .mt-4 { margin-top: 1.5rem; }
-        .mb-3 { margin-bottom: 1rem; }
-        .mb-4 { margin-bottom: 1.5rem; }
-        .py-5 { padding-top: 3rem; padding-bottom: 3rem; }
-        .text-center { text-align: center; }
-        .text-muted { color: var(--gray); }
-        .text-primary { color: var(--primary); }
+        .d-flex {
+            display: flex;
+        }
+
+        .align-items-center {
+            align-items: center;
+        }
+
+        .justify-content-between {
+            justify-content: space-between;
+        }
+
+        .gap-2 {
+            gap: 0.5rem;
+        }
+
+        .gap-3 {
+            gap: 1rem;
+        }
+
+        .mb-3 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mt-3 {
+            margin-top: 1rem;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-muted {
+            color: var(--gray);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        /* Custom Scrollbar for dropdowns */
+        .custom-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-light) #f1f1f1;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: var(--primary-light);
+            border-radius: 6px;
+        }
     </style>
 </head>
 <body>
     <div class="app-container">
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <div class="sidebar">
             <div class="sidebar-header">
                 <h2><i class="fas fa-calendar-alt logo-icon"></i> LeaveEase</h2>
             </div>
-            <nav class="sidebar-menu">
+            <div class="sidebar-menu">
                 <div class="menu-item active" onclick="showDashboard()">
                     <i class="fas fa-tachometer-alt"></i>
                     <span class="menu-text">Dashboard</span>
@@ -697,6 +816,7 @@
                 <div class="menu-item" onclick="showApplyLeave()">
                     <i class="fas fa-plus-circle"></i>
                     <span class="menu-text">Apply Leave</span>
+                    <span class="badge">New</span>
                 </div>
                 <div class="menu-item" onclick="showLeaveHistory()">
                     <i class="fas fa-history"></i>
@@ -705,7 +825,7 @@
                 <div class="menu-item" onclick="showTeamLeaves()">
                     <i class="fas fa-users"></i>
                     <span class="menu-text">Team Leaves</span>
-                    <span class="badge" id="team-pending-badge">3</span>
+                    <span class="badge">3</span>
                 </div>
                 <div class="menu-item" onclick="showCalendar()">
                     <i class="fas fa-calendar"></i>
@@ -723,15 +843,15 @@
                     <i class="fas fa-sign-out-alt"></i>
                     <span class="menu-text">Logout</span>
                 </div>
-            </nav>
-        </aside>
+            </div>
+        </div>
 
         <!-- Main Content -->
-        <main class="main-content">
+        <div class="main-content">
             <!-- Header -->
-            <header class="header">
+            <div class="header">
                 <div class="header-left">
-                    <h1 id="page-title">Dashboard</h1>
+                    <h1>Dashboard</h1>
                 </div>
                 <div class="header-right">
                     <div class="notification-icon">
@@ -750,7 +870,7 @@
                         </div>
                     </div>
                 </div>
-            </header>
+            </div>
 
             <!-- Content Wrapper -->
             <div class="content-wrapper">
@@ -759,36 +879,55 @@
                     <!-- Stats Cards -->
                     <div class="stats-grid">
                         <div class="stat-card primary">
-                            <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
                             <div class="stat-value">18</div>
                             <div class="stat-label">Available Days</div>
-                            <div class="stat-change up"><i class="fas fa-arrow-up"></i> 2 from last month</div>
+                            <div class="stat-change up">
+                                <i class="fas fa-arrow-up"></i> 2 from last month
+                            </div>
                         </div>
                         <div class="stat-card warning">
-                            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
                             <div class="stat-value">3</div>
                             <div class="stat-label">Pending Requests</div>
-                            <div class="stat-change down"><i class="fas fa-arrow-down"></i> 1 from last week</div>
+                            <div class="stat-change down">
+                                <i class="fas fa-arrow-down"></i> 1 from last week
+                            </div>
                         </div>
                         <div class="stat-card success">
-                            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="stat-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
                             <div class="stat-value">12</div>
                             <div class="stat-label">Approved Leaves</div>
-                            <div class="stat-change up"><i class="fas fa-arrow-up"></i> 3 from last month</div>
+                            <div class="stat-change up">
+                                <i class="fas fa-arrow-up"></i> 3 from last month
+                            </div>
                         </div>
                         <div class="stat-card danger">
-                            <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
+                            <div class="stat-icon">
+                                <i class="fas fa-times-circle"></i>
+                            </div>
                             <div class="stat-value">2</div>
                             <div class="stat-label">Rejected Leaves</div>
-                            <div class="stat-change"><i class="fas fa-equals"></i> No change</div>
+                            <div class="stat-change">
+                                <i class="fas fa-equals"></i> No change
+                            </div>
                         </div>
                     </div>
 
                     <!-- Recent Leaves Card -->
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">My Recent Leave Applications</h3>
+                            <div class="card-title">Recent Leave Applications</div>
                             <div class="card-actions">
+                                <button class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-download"></i> Export
+                                </button>
                                 <button class="btn btn-sm btn-primary" onclick="showApplyLeave()">
                                     <i class="fas fa-plus"></i> New Application
                                 </button>
@@ -796,8 +935,55 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table" id="dashboard-leave-table">
-                                    <!-- Table content populated by JS -->
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Leave Type</th>
+                                            <th>From</th>
+                                            <th>To</th>
+                                            <th>Duration</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Annual Leave</td>
+                                            <td>15 Jul 2023</td>
+                                            <td>20 Jul 2023</td>
+                                            <td>5 days</td>
+                                            <td><span class="badge badge-success">Approved</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-light" onclick="viewLeaveDetails(1)">
+                                                    <i class="fas fa-eye"></i> View
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Sick Leave</td>
+                                            <td>05 Aug 2023</td>
+                                            <td>07 Aug 2023</td>
+                                            <td>2 days</td>
+                                            <td><span class="badge badge-warning">Pending</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-light" onclick="viewLeaveDetails(2)">
+                                                    <i class="fas fa-eye"></i> View
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Emergency Leave</td>
+                                            <td>10 Jun 2023</td>
+                                            <td>12 Jun 2023</td>
+                                            <td>2 days</td>
+                                            <td><span class="badge badge-danger">Rejected</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-light" onclick="viewLeaveDetails(3)">
+                                                    <i class="fas fa-eye"></i> View
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -806,17 +992,79 @@
                     <!-- Team Leaves Card -->
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Team on Leave Today</h3>
+                            <div class="card-title">Team Leave Status</div>
                             <div class="card-actions">
-                                <button class="btn btn-sm btn-outline-primary" onclick="showTeamLeaves()">
-                                    <i class="fas fa-users"></i> View All
+                                <button class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-filter"></i> Filter
                                 </button>
                             </div>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table" id="dashboard-team-table">
-                                   <!-- Table content populated by JS -->
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Employee</th>
+                                            <th>Leave Type</th>
+                                            <th>From</th>
+                                            <th>To</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <div class="user-avatar" style="width: 30px; height: 30px; font-size: 0.8rem;">JS</div>
+                                                    <span>Jane Smith</span>
+                                                </div>
+                                            </td>
+                                            <td>Annual Leave</td>
+                                            <td>10 Jul 2023</td>
+                                            <td>17 Jul 2023</td>
+                                            <td><span class="badge badge-success">Approved</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-light" onclick="viewTeamLeaveDetails(101)">
+                                                    <i class="fas fa-eye"></i> View
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <div class="user-avatar" style="width: 30px; height: 30px; font-size: 0.8rem;">MJ</div>
+                                                    <span>Mike Johnson</span>
+                                                </div>
+                                            </td>
+                                            <td>Sick Leave</td>
+                                            <td>05 Jul 2023</td>
+                                            <td>06 Jul 2023</td>
+                                            <td><span class="badge badge-success">Approved</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-light" onclick="viewTeamLeaveDetails(102)">
+                                                    <i class="fas fa-eye"></i> View
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <div class="user-avatar" style="width: 30px; height: 30px; font-size: 0.8rem;">SW</div>
+                                                    <span>Sarah Williams</span>
+                                                </div>
+                                            </td>
+                                            <td>Maternity Leave</td>
+                                            <td>01 Aug 2023</td>
+                                            <td>01 Nov 2023</td>
+                                            <td><span class="badge badge-warning">Pending</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-light" onclick="viewTeamLeaveDetails(103)">
+                                                    <i class="fas fa-eye"></i> View
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -827,22 +1075,27 @@
                 <div id="apply-leave-view" style="display: none;">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Apply for Leave</h3>
+                            <div class="card-title">Apply for Leave</div>
+                            <div class="card-actions">
+                                <button class="btn btn-sm btn-light" onclick="showDashboard()">
+                                    <i class="fas fa-arrow-left"></i> Back
+                                </button>
+                            </div>
                         </div>
                         <div class="card-body">
                             <form id="leave-form">
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="leave-type" class="form-label">Leave Type</label>
+                                            <label class="form-label">Leave Type</label>
                                             <select class="form-control form-select" id="leave-type" required>
-                                                <option value="" disabled selected>Select Leave Type</option>
-                                                <option value="Annual Leave">Annual Leave</option>
-                                                <option value="Sick Leave">Sick Leave</option>
-                                                <option value="Maternity Leave">Maternity Leave</option>
-                                                <option value="Paternity Leave">Paternity Leave</option>
-                                                <option value="Unpaid Leave">Unpaid Leave</option>
-                                                <option value="Other">Other</option>
+                                                <option value="">Select Leave Type</option>
+                                                <option value="annual">Annual Leave</option>
+                                                <option value="sick">Sick Leave</option>
+                                                <option value="maternity">Maternity Leave</option>
+                                                <option value="paternity">Paternity Leave</option>
+                                                <option value="unpaid">Unpaid Leave</option>
+                                                <option value="other">Other</option>
                                             </select>
                                         </div>
                                     </div>
@@ -853,32 +1106,41 @@
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="start-date" class="form-label">Start Date</label>
+                                            <label class="form-label">Start Date</label>
                                             <input type="date" class="form-control" id="start-date" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="end-date" class="form-label">End Date</label>
+                                            <label class="form-label">End Date</label>
                                             <input type="date" class="form-control" id="end-date" required>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="form-group">
-                                    <label for="reason" class="form-label">Reason</label>
-                                    <textarea class="form-control" id="reason" rows="3" placeholder="Enter reason for leave..." required></textarea>
+                                    <label class="form-label">Reason</label>
+                                    <textarea class="form-control" id="reason" rows="3" placeholder="Enter reason for leave" required></textarea>
                                 </div>
+
                                 <div class="form-group">
-                                    <label for="attachment" class="form-label">Attachment (optional)</label>
+                                    <label class="form-label">Contact During Leave</label>
+                                    <input type="text" class="form-control" id="contact" placeholder="Phone number or email where you can be reached">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Attachment (if any)</label>
                                     <input type="file" class="form-control" id="attachment">
-                                    <small class="text-muted">You can upload a medical certificate or other supporting documents.</small>
+                                    <small class="text-muted">You can upload supporting documents (medical certificate, etc.)</small>
                                 </div>
+
                                 <div class="d-flex justify-content-end gap-2 mt-4">
-                                    <button type="button" class="btn btn-light" onclick="showDashboard()">
-                                        <i class="fas fa-times"></i> Cancel
+                                    <button type="reset" class="btn btn-light">
+                                        <i class="fas fa-redo"></i> Reset
                                     </button>
                                     <button type="submit" class="btn btn-primary">
                                         <i class="fas fa-paper-plane"></i> Submit Application
@@ -893,15 +1155,24 @@
                 <div id="leave-history-view" style="display: none;">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">My Leave History</h3>
+                            <div class="card-title">Leave History</div>
+                            <div class="card-actions">
+                                <button class="btn btn-sm btn-light" onclick="showDashboard()">
+                                    <i class="fas fa-arrow-left"></i> Back
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-download"></i> Export
+                                </button>
+                            </div>
                         </div>
                         <div class="card-body">
                             <div class="nav-tabs">
-                                <div class="nav-tab active" onclick="filterLeaveHistory(this, 'all')">All</div>
-                                <div class="nav-tab" onclick="filterLeaveHistory(this, 'approved')">Approved</div>
-                                <div class="nav-tab" onclick="filterLeaveHistory(this, 'pending')">Pending</div>
-                                <div class="nav-tab" onclick="filterLeaveHistory(this, 'rejected')">Rejected</div>
+                                <div class="nav-tab active" onclick="filterLeaveHistory('all')">All</div>
+                                <div class="nav-tab" onclick="filterLeaveHistory('approved')">Approved</div>
+                                <div class="nav-tab" onclick="filterLeaveHistory('pending')">Pending</div>
+                                <div class="nav-tab" onclick="filterLeaveHistory('rejected')">Rejected</div>
                             </div>
+                            
                             <div class="table-responsive">
                                 <table class="table">
                                     <thead>
@@ -915,7 +1186,7 @@
                                         </tr>
                                     </thead>
                                     <tbody id="leave-history-body">
-                                        <!-- Leave history will be populated by JS -->
+                                        <!-- Leave history will be populated by JavaScript -->
                                     </tbody>
                                 </table>
                             </div>
@@ -925,17 +1196,26 @@
 
                 <!-- Team Leaves View -->
                 <div id="team-leaves-view" style="display: none;">
-                     <div class="card">
+                    <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Team Leave Requests</h3>
+                            <div class="card-title">Team Leaves</div>
+                            <div class="card-actions">
+                                <button class="btn btn-sm btn-light" onclick="showDashboard()">
+                                    <i class="fas fa-arrow-left"></i> Back
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-filter"></i> Filter
+                                </button>
+                            </div>
                         </div>
                         <div class="card-body">
                             <div class="nav-tabs">
-                                <div class="nav-tab active" onclick="filterTeamLeaves(this, 'all')">All Requests</div>
-                                <div class="nav-tab" onclick="filterTeamLeaves(this, 'pending')">Pending Approval</div>
-                                <div class="nav-tab" onclick="filterTeamLeaves(this, 'approved')">Approved</div>
-                                <div class="nav-tab" onclick="filterTeamLeaves(this, 'rejected')">Rejected</div>
+                                <div class="nav-tab active" onclick="filterTeamLeaves('all')">All</div>
+                                <div class="nav-tab" onclick="filterTeamLeaves('pending')">Pending Approval</div>
+                                <div class="nav-tab" onclick="filterTeamLeaves('approved')">Approved</div>
+                                <div class="nav-tab" onclick="filterTeamLeaves('rejected')">Rejected</div>
                             </div>
+                            
                             <div class="table-responsive">
                                 <table class="table">
                                     <thead>
@@ -949,7 +1229,7 @@
                                         </tr>
                                     </thead>
                                     <tbody id="team-leaves-body">
-                                        <!-- Team leaves will be populated by JS -->
+                                        <!-- Team leaves will be populated by JavaScript -->
                                     </tbody>
                                 </table>
                             </div>
@@ -961,12 +1241,32 @@
                 <div id="calendar-view" style="display: none;">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Team Leave Calendar</h3>
+                            <div class="card-title">Leave Calendar</div>
+                            <div class="card-actions">
+                                <button class="btn btn-sm btn-light" onclick="showDashboard()">
+                                    <i class="fas fa-arrow-left"></i> Back
+                                </button>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-calendar-day"></i> Day
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary active">
+                                        <i class="fas fa-calendar-week"></i> Week
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-calendar-alt"></i> Month
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-body text-center py-5">
-                            <i class="fas fa-calendar-alt fa-3x text-muted mb-3"></i>
-                            <h3 class="text-muted">Full Calendar Coming Soon</h3>
-                            <p class="text-muted">This area will display an interactive team calendar.</p>
+                        <div class="card-body">
+                            <div id="calendar" style="height: 600px;">
+                                <!-- Calendar will be rendered here -->
+                                <div class="text-center py-5">
+                                    <h3 class="text-muted">Calendar View</h3>
+                                    <p class="text-muted">This would display a interactive calendar with leave events</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -975,12 +1275,50 @@
                 <div id="reports-view" style="display: none;">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Leave Reports</h3>
+                            <div class="card-title">Leave Reports</div>
+                            <div class="card-actions">
+                                <button class="btn btn-sm btn-light" onclick="showDashboard()">
+                                    <i class="fas fa-arrow-left"></i> Back
+                                </button>
+                                <button class="btn btn-sm btn-primary">
+                                    <i class="fas fa-download"></i> Export Report
+                                </button>
+                            </div>
                         </div>
-                        <div class="card-body text-center py-5">
-                            <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
-                            <h3 class="text-muted">Analytical Reports Coming Soon</h3>
-                            <p class="text-muted">This area will display charts and graphs of leave data.</p>
+                        <div class="card-body">
+                            <div class="row mb-4">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="form-label">Report Type</label>
+                                        <select class="form-control form-select">
+                                            <option>Leave Balance</option>
+                                            <option>Leave Utilization</option>
+                                            <option>Department-wise</option>
+                                            <option>Employee-wise</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="form-label">From Date</label>
+                                        <input type="date" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="form-label">To Date</label>
+                                        <input type="date" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="chart-container" style="height: 400px;">
+                                <!-- Chart would be rendered here -->
+                                <div class="text-center py-5">
+                                    <h3 class="text-muted">Analytical Reports</h3>
+                                    <p class="text-muted">This would display charts and graphs of leave data</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -989,14 +1327,19 @@
                 <div id="settings-view" style="display: none;">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Settings</h3>
+                            <div class="card-title">Settings</div>
+                            <div class="card-actions">
+                                <button class="btn btn-sm btn-light" onclick="showDashboard()">
+                                    <i class="fas fa-arrow-left"></i> Back
+                                </button>
+                            </div>
                         </div>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="card">
                                         <div class="card-body text-center">
-                                            <div class="user-avatar mx-auto" style="width: 100px; height: 100px; font-size: 2.5rem;">JD</div>
+                                            <div class="user-avatar mx-auto" style="width: 100px; height: 100px; font-size: 2rem;">JD</div>
                                             <h4 class="mt-3">John Doe</h4>
                                             <p class="text-muted">Manager</p>
                                             <button class="btn btn-sm btn-outline-primary mt-2">
@@ -1004,11 +1347,37 @@
                                             </button>
                                         </div>
                                     </div>
+                                    
+                                    <div class="card mt-3">
+                                        <div class="card-header">
+                                            <div class="card-title">Quick Links</div>
+                                        </div>
+                                        <div class="card-body">
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item d-flex align-items-center gap-2">
+                                                    <i class="fas fa-bell text-primary"></i>
+                                                    <span>Notification Settings</span>
+                                                </li>
+                                                <li class="list-group-item d-flex align-items-center gap-2">
+                                                    <i class="fas fa-lock text-primary"></i>
+                                                    <span>Privacy Settings</span>
+                                                </li>
+                                                <li class="list-group-item d-flex align-items-center gap-2">
+                                                    <i class="fas fa-language text-primary"></i>
+                                                    <span>Language Preferences</span>
+                                                </li>
+                                                <li class="list-group-item d-flex align-items-center gap-2">
+                                                    <i class="fas fa-moon text-primary"></i>
+                                                    <span>Dark Mode</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col-md-8">
                                     <div class="card">
                                         <div class="card-header">
-                                            <h4 class="card-title">Account Information</h4>
+                                            <div class="card-title">Account Settings</div>
                                         </div>
                                         <div class="card-body">
                                             <form id="settings-form">
@@ -1026,10 +1395,52 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                
                                                 <div class="form-group">
                                                     <label class="form-label">Email</label>
                                                     <input type="email" class="form-control" value="john.doe@example.com">
                                                 </div>
+                                                
+                                                <div class="form-group">
+                                                    <label class="form-label">Phone Number</label>
+                                                    <input type="tel" class="form-control" value="+1 (555) 123-4567">
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label class="form-label">Department</label>
+                                                    <select class="form-control form-select">
+                                                        <option>Human Resources</option>
+                                                        <option>Engineering</option>
+                                                        <option>Marketing</option>
+                                                        <option>Finance</option>
+                                                        <option>Operations</option>
+                                                    </select>
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label class="form-label">Position</label>
+                                                    <input type="text" class="form-control" value="HR Manager">
+                                                </div>
+                                                
+                                                <hr class="my-4">
+                                                
+                                                <h5 class="mb-3">Change Password</h5>
+                                                
+                                                <div class="form-group">
+                                                    <label class="form-label">Current Password</label>
+                                                    <input type="password" class="form-control" placeholder="Enter current password">
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label class="form-label">New Password</label>
+                                                    <input type="password" class="form-control" placeholder="Enter new password">
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label class="form-label">Confirm New Password</label>
+                                                    <input type="password" class="form-control" placeholder="Confirm new password">
+                                                </div>
+                                                
                                                 <div class="d-flex justify-content-end mt-4">
                                                     <button type="submit" class="btn btn-primary">
                                                         <i class="fas fa-save"></i> Save Changes
@@ -1044,51 +1455,193 @@
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
     <!-- Leave Details Modal -->
     <div class="modal" id="leave-details-modal">
         <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Leave Application Details</h4>
-                    <button class="modal-close" onclick="closeModal()">×</button>
-                </div>
-                <div class="modal-body" id="leave-details-content">
-                    <!-- Content will be populated by JavaScript -->
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-light" onclick="closeModal()">Close</button>
-                    <button class="btn btn-danger" id="reject-btn" style="display: none;"><i class="fas fa-times-circle"></i> Reject</button>
-                    <button class="btn btn-success" id="approve-btn" style="display: none; background-color: var(--primary);"><i class="fas fa-check-circle"></i> Approve</button>
-                </div>
+            <div class="modal-header">
+                <div class="modal-title">Leave Application Details</div>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="leave-details-content">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-light" onclick="closeModal()">Close</button>
+                <button class="btn btn-primary" id="approve-btn" style="display: none;">Approve</button>
+                <button class="btn btn-danger" id="reject-btn" style="display: none;">Reject</button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- SAMPLE DATA ---
-        let leaveHistory = [
-            { id: 1, type: "Annual Leave", startDate: "2024-07-15", endDate: "2024-07-20", duration: 6, status: "approved", reason: "Family vacation to Hawaii.", appliedOn: "2024-06-10", processedBy: "HR Department", processedOn: "2024-06-12" },
-            { id: 2, type: "Sick Leave", startDate: "2024-08-05", endDate: "2024-08-05", duration: 1, status: "pending", reason: "Feeling unwell, doctor's appointment scheduled.", appliedOn: "2024-08-04", attachment: "medical-cert.pdf" },
-            { id: 3, type: "Emergency Leave", startDate: "2024-06-10", endDate: "2024-06-11", duration: 2, status: "rejected", reason: "Family emergency.", appliedOn: "2024-06-08", processedBy: "HR Department", processedOn: "2024-06-09", rejectionReason: "Insufficient documentation." },
-            { id: 4, type: "Paternity Leave", startDate: "2024-05-01", endDate: "2024-05-14", duration: 14, status: "approved", reason: "Birth of my child.", appliedOn: "2024-04-15", processedBy: "HR Department", processedOn: "2024-04-17"},
-            { id: 5, type: "Unpaid Leave", startDate: "2024-09-10", endDate: "2024-09-15", duration: 6, status: "pending", reason: "Attending a professional development conference.", appliedOn: "2024-08-20" }
+        // Sample data for the leave management system
+        const leaveHistory = [
+            {
+                id: 1,
+                type: "Annual Leave",
+                startDate: "2023-07-15",
+                endDate: "2023-07-20",
+                duration: 5,
+                status: "approved",
+                reason: "Family vacation to Hawaii. Need time to relax and spend quality time with family.",
+                contact: "john.doe@example.com, +1 (555) 123-4567",
+                appliedOn: "2023-06-10",
+                processedBy: "HR Manager",
+                processedOn: "2023-06-12",
+                attachment: "vacation-plan.pdf"
+            },
+            {
+                id: 2,
+                type: "Sick Leave",
+                startDate: "2023-08-05",
+                endDate: "2023-08-07",
+                duration: 2,
+                status: "pending",
+                reason: "Doctor diagnosed with flu. Need rest and recovery time.",
+                contact: "+1 (555) 123-4567",
+                appliedOn: "2023-07-28",
+                processedBy: "",
+                processedOn: "",
+                attachment: "medical-certificate.pdf"
+            },
+            {
+                id: 3,
+                type: "Emergency Leave",
+                startDate: "2023-06-10",
+                endDate: "2023-06-12",
+                duration: 2,
+                status: "rejected",
+                reason: "Family emergency - need to take care of sick parent.",
+                contact: "+1 (555) 123-4567",
+                appliedOn: "2023-06-08",
+                processedBy: "HR Manager",
+                processedOn: "2023-06-09",
+                rejectionReason: "Insufficient documentation provided for emergency leave",
+                attachment: ""
+            },
+            {
+                id: 4,
+                type: "Paternity Leave",
+                startDate: "2023-05-01",
+                endDate: "2023-05-14",
+                duration: 14,
+                status: "approved",
+                reason: "Birth of my child. Need time to support my wife and newborn.",
+                contact: "john.doe@example.com",
+                appliedOn: "2023-04-15",
+                processedBy: "HR Manager",
+                processedOn: "2023-04-17",
+                attachment: "birth-certificate.pdf"
+            },
+            {
+                id: 5,
+                type: "Unpaid Leave",
+                startDate: "2023-09-10",
+                endDate: "2023-09-15",
+                duration: 5,
+                status: "pending",
+                reason: "Personal development - attending a professional conference.",
+                contact: "john.doe@example.com",
+                appliedOn: "2023-08-20",
+                processedBy: "",
+                processedOn: "",
+                attachment: "conference-invitation.pdf"
+            }
         ];
 
-        let teamLeaves = [
-            { id: 101, employee: "Jane Smith", employeeId: "JS", type: "Annual Leave", startDate: "2024-07-10", endDate: "2024-07-17", duration: 8, status: "approved", reason: "Summer vacation.", appliedOn: "2024-06-25"},
-            { id: 102, employee: "Mike Johnson", employeeId: "MJ", type: "Sick Leave", startDate: "2024-08-01", endDate: "2024-08-01", duration: 1, status: "pending", reason: "Food poisoning.", appliedOn: "2024-07-31" },
-            { id: 103, employee: "Sarah Williams", employeeId: "SW", type: "Maternity Leave", startDate: "2024-08-01", endDate: "2024-11-01", duration: 93, status: "approved", reason: "Maternity leave.", appliedOn: "2024-07-15" },
-            { id: 104, employee: "Robert Brown", employeeId: "RB", type: "Other", startDate: "2024-07-20", endDate: "2024-07-21", duration: 2, status: "pending", reason: "Moving to a new apartment.", appliedOn: "2024-07-18"},
-            { id: 105, employee: "Emily Davis", employeeId: "ED", type: "Annual Leave", startDate: "2024-08-10", endDate: "2024-08-20", duration: 11, status: "pending", reason: "Traveling abroad for sister's wedding.", appliedOn: "2024-07-01"}
+        const teamLeaves = [
+            {
+                id: 101,
+                employee: "Jane Smith",
+                employeeId: "JS",
+                type: "Annual Leave",
+                startDate: "2023-07-10",
+                endDate: "2023-07-17",
+                duration: 7,
+                status: "approved",
+                reason: "Summer vacation with family",
+                contact: "jane.smith@example.com",
+                appliedOn: "2023-06-25",
+                processedBy: "John Doe",
+                processedOn: "2023-06-27"
+            },
+            {
+                id: 102,
+                employee: "Mike Johnson",
+                employeeId: "MJ",
+                type: "Sick Leave",
+                startDate: "2023-07-05",
+                endDate: "2023-07-06",
+                duration: 1,
+                status: "approved",
+                reason: "Food poisoning, doctor recommended rest",
+                contact: "+1 (555) 987-6543",
+                appliedOn: "2023-07-04",
+                processedBy: "John Doe",
+                processedOn: "2023-07-05",
+                attachment: "doctor-note.pdf"
+            },
+            {
+                id: 103,
+                employee: "Sarah Williams",
+                employeeId: "SW",
+                type: "Maternity Leave",
+                startDate: "2023-08-01",
+                endDate: "2023-11-01",
+                duration: 90,
+                status: "pending",
+                reason: "Maternity leave as per company policy",
+                contact: "sarah.williams@example.com",
+                appliedOn: "2023-07-15",
+                processedBy: "",
+                processedOn: "",
+                attachment: "pregnancy-confirmation.pdf"
+            },
+            {
+                id: 104,
+                employee: "Robert Brown",
+                employeeId: "RB",
+                type: "Other",
+                startDate: "2023-07-20",
+                endDate: "2023-07-21",
+                duration: 1,
+                status: "pending",
+                reason: "Moving to new apartment, need day to handle logistics",
+                contact: "+1 (555) 555-1234",
+                appliedOn: "2023-07-18",
+                processedBy: "",
+                processedOn: ""
+            },
+            {
+                id: 105,
+                employee: "Emily Davis",
+                employeeId: "ED",
+                type: "Annual Leave",
+                startDate: "2023-08-10",
+                endDate: "2023-08-20",
+                duration: 10,
+                status: "approved",
+                reason: "Traveling abroad for sister's wedding",
+                contact: "emily.davis@example.com",
+                appliedOn: "2023-07-01",
+                processedBy: "John Doe",
+                processedOn: "2023-07-03"
+            }
         ];
-        
-        // --- DOM ELEMENTS ---
-        const allViews = document.querySelectorAll('.content-wrapper > div');
-        const menuItems = document.querySelectorAll('.menu-item');
-        const pageTitle = document.getElementById('page-title');
+
+        // DOM Elements
+        const dashboardView = document.getElementById('dashboard-view');
+        const applyLeaveView = document.getElementById('apply-leave-view');
+        const leaveHistoryView = document.getElementById('leave-history-view');
+        const teamLeavesView = document.getElementById('team-leaves-view');
+        const calendarView = document.getElementById('calendar-view');
+        const reportsView = document.getElementById('reports-view');
+        const settingsView = document.getElementById('settings-view');
+        const leaveHistoryBody = document.getElementById('leave-history-body');
+        const teamLeavesBody = document.getElementById('team-leaves-body');
         const leaveDetailsModal = document.getElementById('leave-details-modal');
         const leaveDetailsContent = document.getElementById('leave-details-content');
         const approveBtn = document.getElementById('approve-btn');
@@ -1096,176 +1649,547 @@
         const leaveForm = document.getElementById('leave-form');
         const settingsForm = document.getElementById('settings-form');
 
-        // --- INITIALIZATION ---
+        // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
-            showDashboard();
-            leaveForm.addEventListener('submit', handleLeaveApplication);
-            settingsForm.addEventListener('submit', (e) => {
+            populateLeaveHistory();
+            populateTeamLeaves();
+            
+            // Form submission handlers
+            leaveForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                alert('Settings saved successfully!');
+                applyForLeave();
             });
-            updateTeamPendingBadge();
+            
+            settingsForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveSettings();
+            });
+            
+            // Show dashboard by default
+            showDashboard();
         });
 
-        // --- NAVIGATION & VIEW MANAGEMENT ---
-        function switchView(viewId, title, menuIndex) {
-            allViews.forEach(view => view.style.display = 'none');
-            document.getElementById(viewId).style.display = 'block';
-            
-            pageTitle.textContent = title;
-            
-            menuItems.forEach((item, index) => {
-                item.classList.toggle('active', index === menuIndex);
-            });
+        // Navigation functions
+        function showDashboard() {
+            hideAllViews();
+            dashboardView.style.display = 'block';
+            updateActiveMenu(0);
+            document.querySelector('.header-left h1').textContent = 'Dashboard';
         }
 
-        function showDashboard() {
-            switchView('dashboard-view', 'Dashboard', 0);
-            populateDashboardTables();
-        }
         function showApplyLeave() {
-            switchView('apply-leave-view', 'Apply for Leave', 1);
+            hideAllViews();
+            applyLeaveView.style.display = 'block';
+            updateActiveMenu(1);
+            document.querySelector('.header-left h1').textContent = 'Apply for Leave';
+            
+            // Set default dates
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('start-date').value = today;
             document.getElementById('end-date').value = today;
         }
+
         function showLeaveHistory() {
-            switchView('leave-history-view', 'My Leave History', 2);
-            filterLeaveHistory(document.querySelector('#leave-history-view .nav-tab'), 'all');
+            hideAllViews();
+            leaveHistoryView.style.display = 'block';
+            updateActiveMenu(2);
+            document.querySelector('.header-left h1').textContent = 'Leave History';
+            filterLeaveHistory('all');
         }
+
         function showTeamLeaves() {
-            switchView('team-leaves-view', 'Team Leave Requests', 3);
-            filterTeamLeaves(document.querySelector('#team-leaves-view .nav-tab'), 'all');
+            hideAllViews();
+            teamLeavesView.style.display = 'block';
+            updateActiveMenu(3);
+            document.querySelector('.header-left h1').textContent = 'Team Leaves';
+            filterTeamLeaves('all');
         }
-        function showCalendar() { switchView('calendar-view', 'Leave Calendar', 4); }
-        function showReports() { switchView('reports-view', 'Reports', 5); }
-        function showSettings() { switchView('settings-view', 'Settings', 6); }
-        function logout() { alert('You have been logged out successfully!'); }
-        
-        // --- DATA RENDERING ---
-        function populateDashboardTables() {
-            // My Recent Leaves
-            const myLeavesTable = document.getElementById('dashboard-leave-table');
-            const recentMyLeaves = leaveHistory.slice(0, 3);
-            let myLeavesHtml = `<thead><tr><th>Leave Type</th><th>Dates</th><th>Status</th><th>Action</th></tr></thead><tbody>`;
-            recentMyLeaves.forEach(leave => {
-                myLeavesHtml += `
-                    <tr>
-                        <td>${leave.type}</td>
-                        <td>${formatDate(leave.startDate)} - ${formatDate(leave.endDate)}</td>
-                        <td><span class="badge ${getStatusBadgeClass(leave.status)}">${capitalize(leave.status)}</span></td>
-                        <td><button class="btn btn-sm btn-light" onclick="viewMyLeaveDetails(${leave.id})"><i class="fas fa-eye"></i></button></td>
-                    </tr>`;
+
+        function showCalendar() {
+            hideAllViews();
+            calendarView.style.display = 'block';
+            updateActiveMenu(4);
+            document.querySelector('.header-left h1').textContent = 'Leave Calendar';
+        }
+
+        function showReports() {
+            hideAllViews();
+            reportsView.style.display = 'block';
+            updateActiveMenu(5);
+            document.querySelector('.header-left h1').textContent = 'Reports';
+        }
+
+        function showSettings() {
+            hideAllViews();
+            settingsView.style.display = 'block';
+            updateActiveMenu(6);
+            document.querySelector('.header-left h1').textContent = 'Settings';
+        }
+
+        function hideAllViews() {
+            dashboardView.style.display = 'none';
+            applyLeaveView.style.display = 'none';
+            leaveHistoryView.style.display = 'none';
+            teamLeavesView.style.display = 'none';
+            calendarView.style.display = 'none';
+            reportsView.style.display = 'none';
+            settingsView.style.display = 'none';
+        }
+
+        function updateActiveMenu(index) {
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach((item, i) => {
+                if (i === index) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
             });
-            myLeavesTable.innerHTML = myLeavesHtml + `</tbody>`;
-
-            // Team on Leave Today
-            const teamTable = document.getElementById('dashboard-team-table');
-            const teamOnLeave = teamLeaves.filter(l => l.status === 'approved').slice(0, 3); // Simplified for demo
-            let teamHtml = `<thead><tr><th>Employee</th><th>Leave Type</th><th>Return Date</th></tr></thead><tbody>`;
-            if (teamOnLeave.length > 0) {
-                teamOnLeave.forEach(leave => {
-                    teamHtml += `
-                        <tr>
-                            <td>
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="user-avatar" style="width: 30px; height: 30px; font-size: 0.8rem;">${leave.employeeId}</div>
-                                    <span>${leave.employee}</span>
-                                </div>
-                            </td>
-                            <td>${leave.type}</td>
-                            <td>${formatDate(leave.endDate)}</td>
-                        </tr>`;
-                });
-            } else {
-                teamHtml += `<tr><td colspan="3" class="text-center text-muted">No team members are on leave today.</td></tr>`;
-            }
-            teamTable.innerHTML = teamHtml + `</tbody>`;
         }
 
-        function renderTable(tbodyId, data, isTeamLeave = false) {
-            const tbody = document.getElementById(tbodyId);
-            tbody.innerHTML = '';
-            if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No records found.</td></tr>`;
-                return;
+        // Filter leave history
+        function filterLeaveHistory(filter) {
+            const tabs = document.querySelectorAll('#leave-history-view .nav-tab');
+            tabs.forEach(tab => {
+                if (tab.textContent.toLowerCase() === filter) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+
+            let filteredLeaves = leaveHistory;
+            if (filter !== 'all') {
+                filteredLeaves = leaveHistory.filter(leave => leave.status === filter);
             }
-            data.forEach(leave => {
+
+            populateLeaveHistoryTable(filteredLeaves);
+        }
+
+        // Filter team leaves
+        function filterTeamLeaves(filter) {
+            const tabs = document.querySelectorAll('#team-leaves-view .nav-tab');
+            tabs.forEach(tab => {
+                if (tab.textContent.toLowerCase().includes(filter)) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+
+            let filteredLeaves = teamLeaves;
+            if (filter !== 'all') {
+                filteredLeaves = teamLeaves.filter(leave => leave.status === filter);
+            }
+
+            populateTeamLeavesTable(filteredLeaves);
+        }
+
+        // Populate leave history table
+        function populateLeaveHistory() {
+            populateLeaveHistoryTable(leaveHistory);
+        }
+
+        function populateLeaveHistoryTable(leaves) {
+            leaveHistoryBody.innerHTML = '';
+            
+            leaves.forEach(leave => {
                 const row = document.createElement('tr');
-                const viewAction = isTeamLeave ? `viewTeamLeaveDetails(${leave.id})` : `viewMyLeaveDetails(${leave.id})`;
+                
                 row.innerHTML = `
-                    ${isTeamLeave ? `
+                    <td>${leave.type}</td>
+                    <td>${formatDate(leave.startDate)} - ${formatDate(leave.endDate)}</td>
+                    <td>${leave.duration} day${leave.duration !== 1 ? 's' : ''}</td>
+                    <td>${formatDate(leave.appliedOn)}</td>
+                    <td><span class="badge ${getStatusBadgeClass(leave.status)}">${capitalizeFirstLetter(leave.status)}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-light" onclick="viewLeaveDetails(${leave.id})">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                    </td>
+                `;
+                
+                leaveHistoryBody.appendChild(row);
+            });
+        }
+
+        // Populate team leaves table
+        function populateTeamLeaves() {
+            populateTeamLeavesTable(teamLeaves);
+        }
+
+        function populateTeamLeavesTable(leaves) {
+            teamLeavesBody.innerHTML = '';
+            
+            leaves.forEach(leave => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
                     <td>
                         <div class="d-flex align-items-center gap-2">
                             <div class="user-avatar" style="width: 30px; height: 30px; font-size: 0.8rem;">${leave.employeeId}</div>
                             <span>${leave.employee}</span>
                         </div>
-                    </td>` : ''}
+                    </td>
                     <td>${leave.type}</td>
-                    <td>${formatDate(leave.startDate)} to ${formatDate(leave.endDate)}</td>
-                    <td>${leave.duration} day${leave.duration > 1 ? 's' : ''}</td>
-                    ${!isTeamLeave ? `<td>${formatDate(leave.appliedOn)}</td>` : ''}
-                    <td><span class="badge ${getStatusBadgeClass(leave.status)}">${capitalize(leave.status)}</span></td>
+                    <td>${formatDate(leave.startDate)} - ${formatDate(leave.endDate)}</td>
+                    <td>${leave.duration} day${leave.duration !== 1 ? 's' : ''}</td>
+                    <td><span class="badge ${getStatusBadgeClass(leave.status)}">${capitalizeFirstLetter(leave.status)}</span></td>
                     <td>
-                        <button class="btn btn-sm btn-light" onclick="${viewAction}">
+                        <button class="btn btn-sm btn-light" onclick="viewTeamLeaveDetails(${leave.id})">
                             <i class="fas fa-eye"></i> View
                         </button>
                     </td>
                 `;
-                if (!isTeamLeave) {
-                    const appliedOnCell = row.cells[3];
-                    const statusCell = row.cells[4];
-                    row.insertBefore(appliedOnCell, statusCell);
-                }
-                tbody.appendChild(row);
+                
+                teamLeavesBody.appendChild(row);
             });
         }
-        
-        // --- FILTERING ---
-        function filterLeaveHistory(tabElement, status) {
-            document.querySelectorAll('#leave-history-view .nav-tab').forEach(tab => tab.classList.remove('active'));
-            tabElement.classList.add('active');
-            const filteredData = status === 'all' ? leaveHistory : leaveHistory.filter(l => l.status === status);
-            renderTable('leave-history-body', filteredData, false);
-        }
 
-        function filterTeamLeaves(tabElement, status) {
-            document.querySelectorAll('#team-leaves-view .nav-tab').forEach(tab => tab.classList.remove('active'));
-            tabElement.classList.add('active');
-            const filteredData = status === 'all' ? teamLeaves : teamLeaves.filter(l => l.status === status);
-            renderTable('team-leaves-body', filteredData, true);
-        }
-
-        // --- FORM HANDLING ---
-        function handleLeaveApplication(event) {
-            event.preventDefault();
-            const start = new Date(document.getElementById('start-date').value);
-            const end = new Date(document.getElementById('end-date').value);
+        // Apply for leave
+        function applyForLeave() {
+            const leaveType = document.getElementById('leave-type').value;
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+            const reason = document.getElementById('reason').value;
+            const contact = document.getElementById('contact').value;
+            const attachment = document.getElementById('attachment').files[0];
             
-            if (end < start) {
-                alert("End date cannot be before start date.");
+            // Validate dates
+            if (new Date(startDate) > new Date(endDate)) {
+                alert('End date must be after start date');
                 return;
             }
-
+            
+            // Calculate duration
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const duration = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+            
+            // Create new leave application
             const newLeave = {
-                id: Math.max(...leaveHistory.map(l => l.id)) + 1,
-                type: document.getElementById('leave-type').value,
-                startDate: document.getElementById('start-date').value,
-                endDate: document.getElementById('end-date').value,
-                duration: Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1,
+                id: leaveHistory.length + 1,
+                type: document.getElementById('leave-type').options[document.getElementById('leave-type').selectedIndex].text,
+                startDate,
+                endDate,
+                duration,
                 status: "pending",
-                reason: document.getElementById('reason').value,
+                reason,
+                contact,
                 appliedOn: new Date().toISOString().split('T')[0],
-                attachment: document.getElementById('attachment').files[0]?.name || null
+                attachment: attachment ? attachment.name : ""
             };
             
             leaveHistory.unshift(newLeave);
+            populateLeaveHistory();
+            
+            // Reset form
             leaveForm.reset();
-            alert('Leave application submitted successfully!');
-            showLeaveHistory();
+            
+            // Show success message
+            alert('Your leave application has been submitted successfully!');
+            
+            // Return to dashboard
+            showDashboard();
         }
 
-        // --- MODAL & ACTIONS ---
+        // Save settings
+        function saveSettings() {
+            // In a real application, this would save to the server
+            alert('Settings saved successfully!');
+        }
+
+        // View leave details
+        function viewLeaveDetails(id) {
+            const leave = leaveHistory.find(l => l.id === id);
+            
+            if (leave) {
+                let detailsHtml = `
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Leave Type</label>
+                                <p>${leave.type}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Status</label>
+                                <p><span class="badge ${getStatusBadgeClass(leave.status)}">${capitalizeFirstLetter(leave.status)}</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Start Date</label>
+                                <p>${formatDate(leave.startDate)}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">End Date</label>
+                                <p>${formatDate(leave.endDate)}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label class="form-label">Duration</label>
+                        <p>${leave.duration} day${leave.duration !== 1 ? 's' : ''}</p>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label class="form-label">Reason</label>
+                        <p>${leave.reason}</p>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label class="form-label">Contact During Leave</label>
+                        <p>${leave.contact || 'Not provided'}</p>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label class="form-label">Applied On</label>
+                        <p>${formatDate(leave.appliedOn)}</p>
+                    </div>
+                `;
+                
+                if (leave.processedBy) {
+                    detailsHtml += `
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Processed By</label>
+                                    <p>${leave.processedBy}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Processed On</label>
+                                    <p>${formatDate(leave.processedOn)}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                if (leave.rejectionReason) {
+                    detailsHtml += `
+                        <div class="form-group mb-3">
+                            <label class="form-label">Rejection Reason</label>
+                            <p>${leave.rejectionReason}</p>
+                        </div>
+                    `;
+                }
+                
+                if (leave.attachment) {
+                    detailsHtml += `
+                        <div class="form-group mb-3">
+                            <label class="form-label">Attachment</label>
+                            <p>
+                                <a href="#" class="text-primary">
+                                    <i class="fas fa-paperclip"></i> ${leave.attachment}
+                                </a>
+                            </p>
+                        </div>
+                    `;
+                }
+                
+                leaveDetailsContent.innerHTML = detailsHtml;
+                
+                // Hide action buttons for personal leave details
+                approveBtn.style.display = 'none';
+                rejectBtn.style.display = 'none';
+                
+                openModal();
+            }
+        }
+
+        // View team leave details
+        function viewTeamLeaveDetails(id) {
+            const leave = teamLeaves.find(l => l.id === id);
+            
+            if (leave) {
+                let detailsHtml = `
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Employee</label>
+                                <p>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="user-avatar" style="width: 30px; height: 30px; font-size: 0.8rem;">${leave.employeeId}</div>
+                                        <span>${leave.employee}</span>
+                                    </div>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Status</label>
+                                <p><span class="badge ${getStatusBadgeClass(leave.status)}">${capitalizeFirstLetter(leave.status)}</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Leave Type</label>
+                                <p>${leave.type}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Duration</label>
+                                <p>${leave.duration} day${leave.duration !== 1 ? 's' : ''}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Start Date</label>
+                                <p>${formatDate(leave.startDate)}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">End Date</label>
+                                <p>${formatDate(leave.endDate)}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label class="form-label">Reason</label>
+                        <p>${leave.reason}</p>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label class="form-label">Contact During Leave</label>
+                        <p>${leave.contact || 'Not provided'}</p>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label class="form-label">Applied On</label>
+                        <p>${formatDate(leave.appliedOn)}</p>
+                    </div>
+                `;
+                
+                if (leave.processedBy) {
+                    detailsHtml += `
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Processed By</label>
+                                    <p>${leave.processedBy}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Processed On</label>
+                                    <p>${formatDate(leave.processedOn)}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                if (leave.attachment) {
+                    detailsHtml += `
+                        <div class="form-group mb-3">
+                            <label class="form-label">Attachment</label>
+                            <p>
+                                <a href="#" class="text-primary">
+                                    <i class="fas fa-paperclip"></i> ${leave.attachment}
+                                </a>
+                            </p>
+                        </div>
+                    `;
+                }
+                
+                leaveDetailsContent.innerHTML = detailsHtml;
+                
+                // Show action buttons only for pending leaves
+                if (leave.status === 'pending') {
+                    approveBtn.style.display = 'inline-block';
+                    rejectBtn.style.display = 'inline-block';
+                    
+                    // Set click handlers
+                    approveBtn.onclick = function() { approveLeave(id); };
+                    rejectBtn.onclick = function() { rejectLeave(id); };
+                } else {
+                    approveBtn.style.display = 'none';
+                    rejectBtn.style.display = 'none';
+                }
+                
+                openModal();
+            }
+        }
+
+        // Approve leave (manager action)
+        function approveLeave(id) {
+            const leave = teamLeaves.find(l => l.id === id);
+            if (leave) {
+                leave.status = 'approved';
+                leave.processedBy = 'John Doe';
+                leave.processedOn = new Date().toISOString().split('T')[0];
+                
+                // Update the corresponding leave in leaveHistory if it's the manager's own leave
+                const userLeave = leaveHistory.find(l => 
+                    l.startDate === leave.startDate && 
+                    l.endDate === leave.endDate &&
+                    l.type === leave.type
+                );
+                
+                if (userLeave) {
+                    userLeave.status = 'approved';
+                    userLeave.processedBy = 'John Doe';
+                    userLeave.processedOn = new Date().toISOString().split('T')[0];
+                }
+                
+                populateTeamLeaves();
+                closeModal();
+                showSuccessAlert('Leave approved successfully!');
+            }
+        }
+
+        // Reject leave (manager action)
+        function rejectLeave(id) {
+            const reason = prompt('Please enter the reason for rejection:');
+            if (reason !== null && reason.trim() !== '') {
+                const leave = teamLeaves.find(l => l.id === id);
+                if (leave) {
+                    leave.status = 'rejected';
+                    leave.rejectionReason = reason;
+                    leave.processedBy = 'John Doe';
+                    leave.processedOn = new Date().toISOString().split('T')[0];
+                    
+                    // Update the corresponding leave in leaveHistory if it's the manager's own leave
+                    const userLeave = leaveHistory.find(l => 
+                        l.startDate === leave.startDate && 
+                        l.endDate === leave.endDate &&
+                        l.type === leave.type
+                    );
+                    
+                    if (userLeave) {
+                        userLeave.status = 'rejected';
+                        userLeave.rejectionReason = reason;
+                        userLeave.processedBy = 'John Doe';
+                        userLeave.processedOn = new Date().toISOString().split('T')[0];
+                    }
+                    
+                    populateTeamLeaves();
+                    closeModal();
+                    showSuccessAlert('Leave rejected successfully!');
+                }
+            }
+        }
+
+        // Modal functions
         function openModal() {
             leaveDetailsModal.classList.add('show');
             document.body.style.overflow = 'hidden';
@@ -1274,116 +2198,52 @@
         function closeModal() {
             leaveDetailsModal.classList.remove('show');
             document.body.style.overflow = 'auto';
-        }
-
-        function viewMyLeaveDetails(id) {
-            const leave = leaveHistory.find(l => l.id === id);
-            if (!leave) return;
             
-            let content = `
-                <div class="row">
-                    <div class="col-md-6"><p><strong>Leave Type:</strong><br>${leave.type}</p></div>
-                    <div class="col-md-6"><p><strong>Status:</strong><br><span class="badge ${getStatusBadgeClass(leave.status)}">${capitalize(leave.status)}</span></p></div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6"><p><strong>From:</strong><br>${formatDate(leave.startDate)}</p></div>
-                    <div class="col-md-6"><p><strong>To:</strong><br>${formatDate(leave.endDate)} (${leave.duration} days)</p></div>
-                </div>
-                <p><strong>Reason:</strong><br>${leave.reason}</p>
-                <hr>
-                <p><strong>Applied On:</strong> ${formatDate(leave.appliedOn)}</p>
-                ${leave.attachment ? `<p><strong>Attachment:</strong> <a href="#" class="text-primary"><i class="fas fa-paperclip"></i> ${leave.attachment}</a></p>` : ''}
-                ${leave.status !== 'pending' ? `<p><strong>Processed By:</strong> ${leave.processedBy} on ${formatDate(leave.processedOn)}</p>` : ''}
-                ${leave.status === 'rejected' ? `<p class="text-danger"><strong>Rejection Reason:</strong> ${leave.rejectionReason}</p>` : ''}
-            `;
-            leaveDetailsContent.innerHTML = content;
-            approveBtn.style.display = 'none';
-            rejectBtn.style.display = 'none';
-            openModal();
+            // Reset modal content after closing
+            setTimeout(() => {
+                leaveDetailsContent.innerHTML = '';
+            }, 300);
         }
 
-        function viewTeamLeaveDetails(id) {
-            const leave = teamLeaves.find(l => l.id === id);
-            if (!leave) return;
-            
-            let content = `
-                <p><strong>Employee:</strong> ${leave.employee}</p>
-                <hr>
-                <div class="row">
-                    <div class="col-md-6"><p><strong>Leave Type:</strong><br>${leave.type}</p></div>
-                    <div class="col-md-6"><p><strong>Status:</strong><br><span class="badge ${getStatusBadgeClass(leave.status)}">${capitalize(leave.status)}</span></p></div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6"><p><strong>From:</strong><br>${formatDate(leave.startDate)}</p></div>
-                    <div class="col-md-6"><p><strong>To:</strong><br>${formatDate(leave.endDate)} (${leave.duration} days)</p></div>
-                </div>
-                <p><strong>Reason:</strong><br>${leave.reason}</p>
-                <hr>
-                <p><strong>Applied On:</strong> ${formatDate(leave.appliedOn)}</p>
-            `;
-            leaveDetailsContent.innerHTML = content;
-
-            if (leave.status === 'pending') {
-                approveBtn.style.display = 'inline-flex';
-                rejectBtn.style.display = 'inline-flex';
-                approveBtn.onclick = () => processTeamLeave(id, 'approved');
-                rejectBtn.onclick = () => processTeamLeave(id, 'rejected');
-            } else {
-                approveBtn.style.display = 'none';
-                rejectBtn.style.display = 'none';
-            }
-            openModal();
+        // Logout function
+        function logout() {
+            // In a real application, this would clear the session
+            showSuccessAlert('You have been logged out successfully!');
+            // Redirect to login page
+            // window.location.href = 'login.html';
         }
 
-        function processTeamLeave(id, newStatus) {
-            const leave = teamLeaves.find(l => l.id === id);
-            if (!leave) return;
-            
-            if (newStatus === 'rejected') {
-                const reason = prompt("Please provide a reason for rejection:");
-                if (!reason) return; // User cancelled prompt
-                leave.rejectionReason = reason;
-            }
-
-            leave.status = newStatus;
-            leave.processedBy = "John Doe (Manager)";
-            leave.processedOn = new Date().toISOString().split('T')[0];
-
-            alert(`Leave has been ${newStatus}.`);
-            closeModal();
-            filterTeamLeaves(document.querySelector('#team-leaves-view .nav-tab.active'), document.querySelector('#team-leaves-view .nav-tab.active').textContent.toLowerCase().split(' ')[0]);
-            updateTeamPendingBadge();
-        }
-        
-        // --- HELPER FUNCTIONS ---
-        function updateTeamPendingBadge() {
-            const pendingCount = teamLeaves.filter(l => l.status === 'pending').length;
-            const badge = document.getElementById('team-pending-badge');
-            if (pendingCount > 0) {
-                badge.textContent = pendingCount;
-                badge.style.display = 'inline-block';
-            } else {
-                badge.style.display = 'none';
-            }
-        }
-        
-        function getStatusBadgeClass(status) {
-            const statusMap = {
-                approved: 'badge-success',
-                pending: 'badge-warning',
-                rejected: 'badge-danger'
-            };
-            return statusMap[status] || 'badge-light';
-        }
-
-        function capitalize(s) {
-            return s.charAt(0).toUpperCase() + s.slice(1);
-        }
-
+        // Helper functions
         function formatDate(dateString) {
             if (!dateString) return 'N/A';
+            
             const options = { year: 'numeric', month: 'short', day: 'numeric' };
             return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        function getStatusBadgeClass(status) {
+            switch (status) {
+                case 'approved': return 'badge-success';
+                case 'pending': return 'badge-warning';
+                case 'rejected': return 'badge-danger';
+                default: return 'badge-light';
+            }
+        }
+
+        function showSuccessAlert(message) {
+            // In a real app, you might use a more sophisticated alert/notification system
+            alert(message);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target === leaveDetailsModal) {
+                closeModal();
+            }
         }
     </script>
 </body>
